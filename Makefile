@@ -1,6 +1,7 @@
 NAME = N-Puzzle
 
-SRC = 
+SRC		=	Puzzle.class.cpp\
+			main.cpp
 
 SRCDIR = srcs
 SRC_E = $(addprefix $(SRCDIR)/, $(SRC))
@@ -14,7 +15,7 @@ LIB = -lncurses
 all: $(NAME)
 
 $(NAME): $(SRC_E)
-	$(CC) -I $(INCPATH) -c $(FLAGS) $(SRC_E)
+	$(CC) -I$(INCPATH) -c $(FLAGS) $(SRC_E)
 	$(CC) -o $(NAME) $(OBJ) $(LIB)
 
 clean:

@@ -8,30 +8,31 @@
 
 class Solver
 {
-private:
-    Puzzle              original;
+    private:
+        Puzzle*              original;
 
-    std::vector<Puzzle> openList;
-    std::vector<Puzzle> closedList;
+        std::vector<Puzzle*> openList;
+        std::vector<Puzzle*> closedList;
 
-    bool                checkIfSolvable(void);
+        bool                checkIfSolvable(void);
 
 
-public:
+    public:
 
-    Solver(int size, Puzzle original);
-    Solver(Solver const & instance);
-    ~Solver();
-    Solver &operator=(Solver const rhs);
+        Solver(int size, Puzzle* original);
+        Solver(Solver const & instance);
+        ~Solver();
+        Solver &operator=(Solver const rhs);
 
-    void        setPuzzle(int puzzle);
-    bool        solve(void);
-    
-    double      timeTaken;
-    int         totalOperations;
-    int         totalOpenStates;
-    int         maxStatesAtATime;
-    static int  size;
+        //heuristicType -> "ManhattanDistance", "EuclidianDistance" ...
+        //searchType -> "GreedySearch" or "UniformCost"
+        bool        solve(std::string heuristicType, std::string searchType);
+        
+        double      timeTaken;
+        int         totalOperations;
+        int         totalOpenStates;
+        int         maxStatesAtATime;
+        static int  size;
     
 };
 
