@@ -4,10 +4,10 @@
 
 #include "Puzzle.class.hpp"
 
-Puzzle::Puzzle()
+Puzzle::Puzzle():
+    _size(-1)
 {
     this->_puzzle = NULL;
-    this->_size = -1;
     this->_heuristic = -1;
     this->_depth = -1;
 }
@@ -18,12 +18,23 @@ _puzzle(puzzle), _size(size), _heuristic(heuristic), _depth(depth)
 
 }
 
-Puzzle::Puzzle(Puzzle const & instance)
+Puzzle::Puzzle(Puzzle const & instance):
+    _size(instance.getSize())
 {
-    this->_puzzle = instance.getPuzzle();
-    this->_size = instance.getSize();
     this->_heuristic = instance.getHeuristic();
     this->_depth = instance.getDepth();
+    
+    this->_puzzle = new int*[this->_size];
+    for (int i = 0; i < this->_size; i++)
+    {
+        this->_puzzle[i] = new int[this->_size];
+    }
+    int **tmp = instance.getPuzzle();
+    for (int y = 0; y < this->_size; ++y)
+    {
+        for (int x = 0; x < this->_size; ++x)
+            this->_puzzle[y][x] = tmp[y][x];
+    }
 }
 
 Puzzle::~Puzzle(void)
@@ -33,14 +44,16 @@ Puzzle::~Puzzle(void)
     delete this->_puzzle;
 }
 
-Puzzle  &Puzzle::operator=(Puzzle const rhs)
+/*
+Puzzle  &Puzzle::operator=(Puzzle const rhs):
+    _size(instance.getSize())
 {
     this->_puzzle = rhs.getPuzzle();
-    this->_size = rhs.getSize();
     this->_heuristic = rhs.getHeuristic();
     this->_depth = rhs.getDepth();
     return *this;
 }
+*/
 
 bool    Puzzle::operator==(Puzzle const rhs)
 {
@@ -75,6 +88,16 @@ int     Puzzle::getDepth(void) const
     return this->_depth;
 }
 
+void                    Puzzle::printPuzzle(void) const
+{
+    for(int y = 0; y < this->_size; ++y)
+    {
+        for (int x = 0; x < this->_size; ++x)
+            std::cout << (std::to_string(this->_puzzle[y][x]) + " ");
+        std::cout << std::endl;
+    }
+}
+
 void                    Puzzle::swapValues(int x1, int y1,
     int x2, int y2)
 {
@@ -97,9 +120,15 @@ std::vector<Puzzle*>    Puzzle::generatePuzzleFromPosition(void)
     int x, y;
 
     for (x = 0; x < this->_size; ++x)
+    {
         for (y = 0; y < this->_size; ++y)
+        {
             if (this->_puzzle[y][x] == 0)
                 break;
+        }
+        if (this->_puzzle[y][x] == 0)
+            break;
+    }
     if (x == this->_size && y == this->_size)
         throw std::runtime_error(std::string("Tried to generate puzzles from puzzle without empty space"));
 

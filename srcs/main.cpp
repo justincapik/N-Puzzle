@@ -1,3 +1,6 @@
+#include <iostream>
+#include <vector>
+
 #include "Puzzle.class.hpp"
 #include "Solver.class.hpp"
 
@@ -20,6 +23,20 @@ int     main(int argc, char **argv)
     ogtab[2][2] = 5;
 
     Puzzle *ogPuzzle = new Puzzle(ogtab, 3);
+    ogPuzzle->printPuzzle();
+    std::cout << std::endl;
+
+    std::vector<Puzzle*>    vec = ogPuzzle->generatePuzzleFromPosition();    
+
+    ogPuzzle->printPuzzle();
+    std::cout << std::endl;
+    for (std::vector<Puzzle*>::iterator it = vec.begin();
+        it != vec.end(); ++it)
+    {
+        (*it)->printPuzzle();
+        std::cout << *it << std::endl;
+        std::cout << std::endl;
+    }
 
     (void)ogPuzzle;
     (void)argc;

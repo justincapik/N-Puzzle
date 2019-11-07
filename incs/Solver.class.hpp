@@ -9,16 +9,18 @@
 class Solver
 {
     private:
-        Puzzle*              original;
+        Puzzle*                 _original;
+        int                     _size;
 
-        std::vector<Puzzle*> openList;
-        std::vector<Puzzle*> closedList;
+        std::vector<Puzzle*>    _openList;
+        std::vector<Puzzle*>    _closedList;
 
-        bool                checkIfSolvable(void);
+        bool                _checkIfSolvable(void);
 
 
     public:
 
+        Solver();
         Solver(int size, Puzzle* original);
         Solver(Solver const & instance);
         ~Solver();
@@ -27,12 +29,13 @@ class Solver
         //heuristicType -> "ManhattanDistance", "EuclidianDistance" ...
         //searchType -> "GreedySearch" or "UniformCost"
         bool        solve(std::string heuristicType, std::string searchType);
-        
+
+        int         getSize();
+
         double      timeTaken;
         int         totalOperations;
         int         totalOpenStates;
         int         maxStatesAtATime;
-        static int  size;
     
 };
 
