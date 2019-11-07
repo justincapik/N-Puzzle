@@ -1,6 +1,7 @@
 NAME = N-Puzzle
 
 SRC		=	Puzzle.class.cpp\
+			Solver.class.cpp\
 			main.cpp
 
 SRCDIR = srcs

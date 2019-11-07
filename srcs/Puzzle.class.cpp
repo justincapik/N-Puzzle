@@ -10,12 +10,13 @@ Puzzle::Puzzle():
     this->_puzzle = NULL;
     this->_heuristic = -1;
     this->_depth = -1;
+    this->_prevPuzzle = NULL;
 }
 
 Puzzle::Puzzle(int **puzzle, int size, int heuristic, int depth):
 _puzzle(puzzle), _size(size), _heuristic(heuristic), _depth(depth)
 {
-
+    this->_prevPuzzle = NULL;
 }
 
 Puzzle::Puzzle(Puzzle const & instance):
@@ -35,6 +36,7 @@ Puzzle::Puzzle(Puzzle const & instance):
         for (int x = 0; x < this->_size; ++x)
             this->_puzzle[y][x] = tmp[y][x];
     }
+    this->_prevPuzzle = NULL;
 }
 
 Puzzle::~Puzzle(void)
@@ -83,9 +85,29 @@ int     Puzzle::getHeuristic(void) const
     return this->_heuristic;
 }
 
+void    Puzzle::setHeuritic(int heuristic)
+{
+    this->_heuristic = heuristic;
+}
+
 int     Puzzle::getDepth(void) const
 {
     return this->_depth;
+}
+
+void    Puzzle::increaseDepth(void)
+{
+    ++(this->_depth);
+}
+
+Puzzle  *Puzzle::getPrevPuzzle(void) const
+{
+    return this->_prevPuzzle;
+}
+
+void    Puzzle::setPrevPuzzle(Puzzle *puzzle)
+{
+    this->_prevPuzzle = puzzle;
 }
 
 void                    Puzzle::printPuzzle(void) const
@@ -139,6 +161,8 @@ std::vector<Puzzle*>    Puzzle::generatePuzzleFromPosition(void)
             continue;
         Puzzle *tmp = new Puzzle(*this);
         tmp->swapValues(x, y, x + poss[i][1], y + poss[i][0]);
+        tmp->setPrevPuzzle(this);
+        tmp->increaseDepth();
         retPoss.push_back(tmp);
     }
 

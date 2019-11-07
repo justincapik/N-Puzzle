@@ -28,17 +28,8 @@ int     main(int argc, char **argv)
 
     std::vector<Puzzle*>    vec = ogPuzzle->generatePuzzleFromPosition();    
 
-    ogPuzzle->printPuzzle();
-    std::cout << std::endl;
-    for (std::vector<Puzzle*>::iterator it = vec.begin();
-        it != vec.end(); ++it)
-    {
-        (*it)->printPuzzle();
-        std::cout << *it << std::endl;
-        std::cout << std::endl;
-    }
-
-    (void)ogPuzzle;
+    Solver solver(ogPuzzle, 3);
+    solver.solve("BFS", "None");
     (void)argc;
     (void)argv;
     return (0);

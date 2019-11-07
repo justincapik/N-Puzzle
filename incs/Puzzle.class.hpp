@@ -10,6 +10,7 @@ class Puzzle
         const int   _size;
         int         _heuristic;
         int         _depth;
+        Puzzle      *_prevPuzzle;
 
     public:
 
@@ -23,10 +24,17 @@ class Puzzle
 
         int     **getPuzzle(void) const;
         int     getSize(void) const;
-        int     getHeuristic(void) const;
         int     getDepth(void) const;
-        void    printPuzzle(void) const;
+        void    increaseDepth(void);
 
+        int     getHeuristic(void) const;
+        void    setHeuritic(int heuristic);
+        
+        Puzzle  *getPrevPuzzle(void) const;
+        void    setPrevPuzzle(Puzzle *puzzle);
+
+        void    printPuzzle(void) const;
+        
         void                    swapValues(int x1, int y1, int x2, int y2);
         std::vector<Puzzle*>    generatePuzzleFromPosition(void);
 
