@@ -11,13 +11,13 @@ Solver::Solver(Puzzle *original, int size):
 
 Solver::~Solver()
 {
-    delete this->_original;
     delete this->_solution;
+    this->_solution = NULL;
 
     for (std::vector<Puzzle*>::iterator it = this->_openList.begin();
         it < this->_openList.end(); ++it)
     {
-        //delete *it;
+        delete *it;
         *it = NULL;
     }
     this->_openList.clear();
@@ -37,15 +37,18 @@ Puzzle    *Solver::solve(std::string heuristicType, std::string searchType)
 
     this->_openList.push_back(this->_original);
 
-/*
     while (1)
     {
+        //std::cout << (std::to_string(this->_openList.size())
+        //    + ", " + std::to_string(this->_closedList.size())) << std::endl;
         open = this->_openList.front();
         this->_openList.erase(this->_openList.begin());
+        this->_closedList.push_back(open);
 
-        if (open == this->_solution)
+        if (*open == *(this->_solution))
             return open;
         
+        //open->printPuzzle();
         std::vector<Puzzle*>    generated = open->generatePuzzleFromPosition();
         for (std::vector<Puzzle*>::iterator it = generated.begin();
             it < generated.end(); ++it)
@@ -54,7 +57,9 @@ Puzzle    *Solver::solve(std::string heuristicType, std::string searchType)
 
             (*it)->setHeuritic(this->calcHeuristic(*it, heuristicType));
             if (i == -1)
+            {
                 addToOpenList(*it, searchType);
+            }
             else
             {
                 if (this->_closedList.at(i)->getHeuristic() <= (*it)->getHeuristic())
@@ -68,18 +73,34 @@ Puzzle    *Solver::solve(std::string heuristicType, std::string searchType)
             }
         }
     }
-    */
     //TODO: operations info (max states at a time, total open states...)
-    (void)heuristicType;
-    (void)searchType;
-    (void)open;
-    return NULL;
 }
 
 int     Solver::calcHeuristic(Puzzle *puzzle, std::string heauristicType)
 {
+    int **tmp = puzzle->getPuzzle();
+    int **sol = this->_solution->getPuzzle();
+
     if (heauristicType.compare("BFS") == 0)
         return 0 + puzzle->getDepth();
+    else if (heauristicType.compare("A* Tiles-out") == 0)
+    {
+        int score = 0;
+        for (int y = 0; y < this->_size; ++y)
+            for (int x = 0; x < this->_size; ++x)
+                if (tmp[y][x] != sol[y][x])
+                    ++score;
+        return puzzle->getDepth() + score;
+    }
+    /*
+    else if (heauristicType.compare("A* Manhattan distance") == 0)
+    {
+        int score = 0;
+        for (int y = 0; y < this->_size; ++y)
+            for (int x = 0; x < this->_size; ++x)
+                score += 
+    }
+    */
     else
         throw std::runtime_error(std::string("Invalide heuristic name"));
 }
@@ -122,7 +143,7 @@ int     Solver::checkIfInClosedList(Puzzle *puzzle)
     for (std::vector<Puzzle*>::iterator it = this->_closedList.begin();
         it < this->_closedList.end(); ++it)
     {
-        if (*it == puzzle)
+        if (**it == *puzzle)
             return (it - this->_closedList.begin());
     }
     return (-1);
@@ -131,7 +152,8 @@ int     Solver::checkIfInClosedList(Puzzle *puzzle)
 void    Solver::addToOpenList(Puzzle *puzzle, std::string searchType)
 {
     std::vector<Puzzle*>::iterator it = this->_openList.begin();
-    while ((*it)->getHeuristic() <= puzzle->getHeuristic())
+    while (it < this->_openList.end()
+        && (*it)->getHeuristic() <= puzzle->getHeuristic())
         ++it;
     this->_openList.insert(it, puzzle);
     (void)searchType; //TODO: for greedy and uniform search

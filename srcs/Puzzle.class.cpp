@@ -42,8 +42,8 @@ Puzzle::Puzzle(Puzzle const & instance):
 Puzzle::~Puzzle(void)
 {
     for (int i = 0; i < this->_size; ++i)
-        delete this->_puzzle[i];
-    delete this->_puzzle;
+        delete[] this->_puzzle[i];
+    delete[] this->_puzzle;
 }
 
 /*
@@ -110,10 +110,12 @@ void    Puzzle::setPrevPuzzle(Puzzle *puzzle)
     this->_prevPuzzle = puzzle;
 }
 
-void                    Puzzle::printPuzzle(void) const
+void                    Puzzle::printPuzzle(int tabs) const
 {
     for(int y = 0; y < this->_size; ++y)
     {
+        for (int i = 0; i < tabs; ++i)
+            std::cout << "\t";
         for (int x = 0; x < this->_size; ++x)
             std::cout << (std::to_string(this->_puzzle[y][x]) + " ");
         std::cout << std::endl;
@@ -148,7 +150,7 @@ std::vector<Puzzle*>    Puzzle::generatePuzzleFromPosition(void)
             if (this->_puzzle[y][x] == 0)
                 break;
         }
-        if (this->_puzzle[y][x] == 0)
+        if (y != 3 && this->_puzzle[y][x] == 0)
             break;
     }
     if (x == this->_size && y == this->_size)
@@ -157,7 +159,7 @@ std::vector<Puzzle*>    Puzzle::generatePuzzleFromPosition(void)
     for(int i = 0; i < 4; ++i)
     {
         if (y + poss[i][0] < 0 || y + poss[i][0] >= this->_size
-            || x + poss[i][1] < 0 || y + poss[i][1] >= this->_size)
+            || x + poss[i][1] < 0 || x + poss[i][1] >= this->_size)
             continue;
         Puzzle *tmp = new Puzzle(*this);
         tmp->swapValues(x, y, x + poss[i][1], y + poss[i][0]);

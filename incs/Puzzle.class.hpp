@@ -33,8 +33,8 @@ class Puzzle
         Puzzle  *getPrevPuzzle(void) const;
         void    setPrevPuzzle(Puzzle *puzzle);
 
-        void    printPuzzle(void) const;
-        
+        void    printPuzzle(int tabs=0) const;
+
         void                    swapValues(int x1, int y1, int x2, int y2);
         std::vector<Puzzle*>    generatePuzzleFromPosition(void);
 
