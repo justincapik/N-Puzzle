@@ -94,42 +94,13 @@ int     main(int ac, char **av)
         << "   -u   Use uniform-cost search" << endl;
         return 0;
     }
-    return 1;
 
-    /*int **ogtab = new int*[3];
-    for(int i = 0; i < 3; ++i)
-        ogtab[i] = new int[3];
-
-    ogtab[0][0] = 1;
-    ogtab[0][1] = 2;
-    ogtab[0][2] = 3;
-
-    ogtab[1][0] = 0;
-    ogtab[1][1] = 8;
-    ogtab[1][2] = 4;
-
-    ogtab[2][0] = 7;
-    ogtab[2][1] = 6;
-    ogtab[2][2] = 5;
-
-    Puzzle *ogPuzzle = new Puzzle(ogtab, 3);
-    ogPuzzle->printPuzzle();
+    Puzzle *ogPuzzle = new Puzzle(firstTab, ::size);
     std::cout << std::endl;
 
-    std::vector<Puzzle*>    vec = ogPuzzle->generatePuzzleFromPosition();
-
-    ogPuzzle->printPuzzle();
-    std::cout << std::endl;
-    for (std::vector<Puzzle*>::iterator it = vec.begin();
-        it != vec.end(); ++it)
-    {
-        (*it)->printPuzzle();
-        std::cout << *it << std::endl;
-        std::cout << std::endl;
-    }
-
-    (void)ogPuzzle;
-    (void)argc;
-    (void)argv;
-    return (0);*/
+    Solver solver(ogPuzzle, 3);
+    Puzzle *solution = solver.solve("A* Tiles-out", "None");
+    solution->printPuzzle();
+    std::cout << (std::to_string(solution->getDepth())) << std::endl;
+    return (0);
 }

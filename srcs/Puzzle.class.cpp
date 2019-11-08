@@ -10,12 +10,13 @@ Puzzle::Puzzle():
     this->_puzzle = NULL;
     this->_heuristic = -1;
     this->_depth = -1;
+    this->_prevPuzzle = NULL;
 }
 
 Puzzle::Puzzle(int **puzzle, int size, int heuristic, int depth):
 _puzzle(puzzle), _size(size), _heuristic(heuristic), _depth(depth)
 {
-
+    this->_prevPuzzle = NULL;
 }
 
 Puzzle::Puzzle(Puzzle const & instance):
@@ -35,13 +36,14 @@ Puzzle::Puzzle(Puzzle const & instance):
         for (int x = 0; x < this->_size; ++x)
             this->_puzzle[y][x] = tmp[y][x];
     }
+    this->_prevPuzzle = NULL;
 }
 
 Puzzle::~Puzzle(void)
 {
     for (int i = 0; i < this->_size; ++i)
-        delete this->_puzzle[i];
-    delete this->_puzzle;
+        delete[] this->_puzzle[i];
+    delete[] this->_puzzle;
 }
 
 /*
@@ -83,15 +85,37 @@ int     Puzzle::getHeuristic(void) const
     return this->_heuristic;
 }
 
+void    Puzzle::setHeuritic(int heuristic)
+{
+    this->_heuristic = heuristic;
+}
+
 int     Puzzle::getDepth(void) const
 {
     return this->_depth;
 }
 
-void                    Puzzle::printPuzzle(void) const
+void    Puzzle::increaseDepth(void)
+{
+    ++(this->_depth);
+}
+
+Puzzle  *Puzzle::getPrevPuzzle(void) const
+{
+    return this->_prevPuzzle;
+}
+
+void    Puzzle::setPrevPuzzle(Puzzle *puzzle)
+{
+    this->_prevPuzzle = puzzle;
+}
+
+void                    Puzzle::printPuzzle(int tabs) const
 {
     for(int y = 0; y < this->_size; ++y)
     {
+        for (int i = 0; i < tabs; ++i)
+            std::cout << "\t";
         for (int x = 0; x < this->_size; ++x)
             std::cout << (std::to_string(this->_puzzle[y][x]) + " ");
         std::cout << std::endl;
@@ -126,7 +150,7 @@ std::vector<Puzzle*>    Puzzle::generatePuzzleFromPosition(void)
             if (this->_puzzle[y][x] == 0)
                 break;
         }
-        if (this->_puzzle[y][x] == 0)
+        if (y != 3 && this->_puzzle[y][x] == 0)
             break;
     }
     if (x == this->_size && y == this->_size)
@@ -135,10 +159,12 @@ std::vector<Puzzle*>    Puzzle::generatePuzzleFromPosition(void)
     for(int i = 0; i < 4; ++i)
     {
         if (y + poss[i][0] < 0 || y + poss[i][0] >= this->_size
-            || x + poss[i][1] < 0 || y + poss[i][1] >= this->_size)
+            || x + poss[i][1] < 0 || x + poss[i][1] >= this->_size)
             continue;
         Puzzle *tmp = new Puzzle(*this);
         tmp->swapValues(x, y, x + poss[i][1], y + poss[i][0]);
+        tmp->setPrevPuzzle(this);
+        tmp->increaseDepth();
         retPoss.push_back(tmp);
     }
 

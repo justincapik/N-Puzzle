@@ -10,27 +10,30 @@ class Solver
 {
     private:
         Puzzle*                 _original;
+        Puzzle*                 _solution;
         int                     _size;
 
         std::vector<Puzzle*>    _openList;
         std::vector<Puzzle*>    _closedList;
 
-        bool                _checkIfSolvable(void);
-
+        Puzzle                  *genSolution(void);
 
     public:
 
-        Solver();
-        Solver(int size, Puzzle* original);
-        Solver(Solver const & instance);
+        Solver(Puzzle* original, int size);
         ~Solver();
-        Solver &operator=(Solver const rhs);
 
         //heuristicType -> "ManhattanDistance", "EuclidianDistance" ...
         //searchType -> "GreedySearch" or "UniformCost"
-        bool        solve(std::string heuristicType, std::string searchType);
-
-        int         getSize();
+        Puzzle      *solve(std::string heuristicType, std::string searchType);
+        
+        int                     calcHeuristic(Puzzle *puzzle,
+            std::string heuristicType); //TODO: actual heuristics
+        void                    addToOpenList(Puzzle *puzzle,
+            std::string searchType); //TODO:
+        // returns -1 if the puzzle is not in the closed list,
+        // it's position if it is
+        int                     checkIfInClosedList(Puzzle *puzzle); //TODO:
 
         double      timeTaken;
         int         totalOperations;
