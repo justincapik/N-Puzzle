@@ -15,7 +15,7 @@ int **parsing(string fileName) {
     string line;
     int **ret = NULL;
 
-    int y = 0;
+    int y = -1;
     int x = 0;
 
     file.open(fileName);
