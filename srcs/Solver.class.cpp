@@ -48,7 +48,7 @@ Puzzle    *Solver::solve(std::string heuristicType, std::string searchType)
         if (*open == *(this->_solution))
             return open;
         
-        //open->printPuzzle();
+        open->printPuzzle();
         std::vector<Puzzle*>    generated = open->generatePuzzleFromPosition();
         for (std::vector<Puzzle*>::iterator it = generated.begin();
             it < generated.end(); ++it)

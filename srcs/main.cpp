@@ -99,8 +99,9 @@ int     main(int ac, char **av)
     std::cout << std::endl;
 
     Solver solver(ogPuzzle, 3);
-    Puzzle *solution = solver.solve("A* Tiles-out", "None");
-    solution->printPuzzle();
-    std::cout << (std::to_string(solution->getDepth())) << std::endl;
+    ogPuzzle->printPuzzle();
+    //Puzzle *solution = solver.solve("A* Tiles-out", "None");
+    //solution->printPuzzle();
+    //std::cout << (std::to_string(solution->getDepth())) << std::endl;
     return (0);
 }
