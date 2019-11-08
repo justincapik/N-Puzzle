@@ -10,7 +10,6 @@ using namespace std;
 
 int size = 0;
 
-
 int **parsing(string fileName) {
     ifstream file;
     string line;
@@ -56,7 +55,6 @@ int **parsing(string fileName) {
         y++;
     }
     file.close();
-    cout << ::size << endl;
     return ret;
 }
 
@@ -65,7 +63,6 @@ int     main(int ac, char **av)
     string algo = "AStarSearch";
     string heuristic = "ManhattanDistance";
     int **firstTab = NULL;
-
 
     try {
         if (ac == 1)
@@ -87,7 +84,6 @@ int     main(int ac, char **av)
                 firstTab = parsing(av[n]);
                 cout << ::size << endl;
             }
-
         }
     }
     catch (exception& e) {
