@@ -179,10 +179,16 @@ bool Solver::isSolvable(int size) {
     }
 
     int inver = 0;
-    for (int i = 0; i < size * size; i++)
-        for (int j = i + 1; j < size * size; j++)
+    for (int i = 0; i < size * size; i++) {
+        for (int j = i + 1; j < size * size; j++) {
             if (convert[i] > convert[j])
                 inver++;
+            if (convert[i] == convert[j])
+                throw std::runtime_error("Invalid file format.");
+        }
+
+    }
+
 
     if (size % 2 == 0 && p0s % 2 != 0)
         return (inver % 2 != 0);
