@@ -17,6 +17,7 @@ class Solver
         std::vector<Puzzle*>    _closedList;
 
         Puzzle                  *genSolution(void);
+        bool                    isSolvable(int size);
 
     public:
 
@@ -26,7 +27,7 @@ class Solver
         //heuristicType -> "ManhattanDistance", "EuclidianDistance" ...
         //searchType -> "GreedySearch" or "UniformCost"
         Puzzle      *solve(std::string heuristicType, std::string searchType);
-        
+
         int                     calcHeuristic(Puzzle *puzzle,
             std::string heuristicType); //TODO: actual heuristics
         void                    addToOpenList(Puzzle *puzzle,
@@ -39,7 +40,7 @@ class Solver
         int         totalOperations;
         int         totalOpenStates;
         int         maxStatesAtATime;
-    
+
 };
 
 #endif

@@ -6,7 +6,9 @@
 Solver::Solver(Puzzle *original, int size):
     _original(original), _size(size)
 {
-    this->_solution = this->genSolution();    
+    this->_solution = this->genSolution();
+    if (!this->isSolvable(size))
+        throw std::runtime_error("This puzzle is not solvable.");
 }
 
 Solver::~Solver()
@@ -47,7 +49,7 @@ Puzzle    *Solver::solve(std::string heuristicType, std::string searchType)
 
         if (*open == *(this->_solution))
             return open;
-        
+
         //open->printPuzzle();
         std::vector<Puzzle*>    generated = open->generatePuzzleFromPosition();
         for (std::vector<Puzzle*>::iterator it = generated.begin();
@@ -98,7 +100,7 @@ int     Solver::calcHeuristic(Puzzle *puzzle, std::string heauristicType)
         int score = 0;
         for (int y = 0; y < this->_size; ++y)
             for (int x = 0; x < this->_size; ++x)
-                score += 
+                score +=
     }
     */
     else
@@ -114,7 +116,7 @@ Puzzle  *Solver::genSolution(void)
         for(int j = 0; j < this->_size; ++j)
             solutionTab[i][j] = -1;
     }
-    
+
     int i = 1, x = 0, y = 0;
     while (1)
     {
@@ -132,7 +134,7 @@ Puzzle  *Solver::genSolution(void)
             solutionTab[y][x] = 0;
             break;
         }
-        
+
     }
     Puzzle *solution = new Puzzle(solutionTab, this->_size);
     return solution;
@@ -157,4 +159,32 @@ void    Solver::addToOpenList(Puzzle *puzzle, std::string searchType)
         ++it;
     this->_openList.insert(it, puzzle);
     (void)searchType; //TODO: for greedy and uniform search
+}
+
+bool Solver::isSolvable(int size) {
+    int p0s = 0;
+    int convert[size * size];
+    int **solution = this->_solution->getPuzzle();
+    int **original = this->_original->getPuzzle();
+
+    for (int y = 0; y < size; y++) {
+        for (int x = 0; x < size; x++) {
+            if (solution[y][x] != 0)
+                convert[solution[y][x] - 1] = original[y][x];
+            else
+                convert[size * size - 1] = original[y][x];
+            if (original[y][x] == 0)
+                p0s = size - y;
+        }
+    }
+
+    int inver = 0;
+    for (int i = 0; i < size * size; i++)
+        for (int j = i + 1; j < size * size; j++)
+            if (convert[i] > convert[j])
+                inver++;
+
+    if (size % 2 == 0 && p0s % 2 != 0)
+        return (inver % 2 != 0);
+    return (inver % 2 == 0);
 }

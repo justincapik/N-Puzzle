@@ -94,13 +94,19 @@ int     main(int ac, char **av)
         << "   -u   Use uniform-cost search" << endl;
         return 0;
     }
+    try {
+        Puzzle *ogPuzzle = new Puzzle(firstTab, ::size);
+        std::cout << std::endl;
 
-    Puzzle *ogPuzzle = new Puzzle(firstTab, ::size);
-    std::cout << std::endl;
+        Solver solver(ogPuzzle, 3);
+        Puzzle *solution = solver.solve("A* Tiles-out", "None");
+        solution->printPuzzle();
+        std::cout << (std::to_string(solution->getDepth())) << std::endl;
+    }
+    catch (exception& e) {
+        cout << e.what() << endl;
+    }
 
-    Solver solver(ogPuzzle, 3);
-    Puzzle *solution = solver.solve("A* Tiles-out", "None");
-    solution->printPuzzle();
-    std::cout << (std::to_string(solution->getDepth())) << std::endl;
+
     return (0);
 }
