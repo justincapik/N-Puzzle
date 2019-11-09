@@ -79,6 +79,16 @@ Puzzle    *Solver::solve(std::string heuristicType, std::string searchType)
                 else
                 {
                     delete this->_closedList.at(i);
+                    //std::cout << static_cast<void*>(this->_closedList.at(i)) << std::endl;
+                    for (std::vector<Puzzle*>::iterator it = this->_openList.begin();
+                        it < this->_openList.end(); ++it)
+                    {
+                        if (static_cast<void*>((*it)->getPrevPuzzle())
+                            == static_cast<void*>(this->_closedList.at(i)))
+                        {
+                            (*it)->setPrevPuzzle(NULL);
+                        }
+                    }
                     this->_closedList.at(i) = NULL;
                     this->_closedList.erase(this->_closedList.begin() + i);
                     addToOpenList(*it, searchType);

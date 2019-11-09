@@ -67,13 +67,7 @@ bool    Puzzle::operator==(Puzzle const rhs)
 
     if (rhs.getSize() != this->_size)
     {
-        if (this->_prevPuzzle == NULL)
-            std::cout << "NULL" << std::endl;
-        else
-            std::cout << "pas NULL" << std::endl;
-        std::cout << "1" << std::endl;
-        std::cout << this->_prevPuzzle->getSize() << std::endl;
-        std::cout << "2" << std::endl;
+        std::cout << static_cast<void*>(this) << std::endl;
         throw std::runtime_error(std::string("Tried to compare puzzles of different size"));
     }
     for(int i = 0; i < this->_size; ++i)
