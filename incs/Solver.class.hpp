@@ -30,10 +30,11 @@ class Solver
         int                     calcHeuristic(Puzzle *puzzle,
             std::string heuristicType); //TODO: actual heuristics
         void                    addToOpenList(Puzzle *puzzle,
-            std::string searchType); //TODO:
+            std::string searchType);
         // returns -1 if the puzzle is not in the closed list,
         // it's position if it is
-        int                     checkIfInClosedList(Puzzle *puzzle); //TODO:
+        int                     checkIfInClosedList(Puzzle *puzzle);
+        int                     checkIfInOpenList(Puzzle *puzzle);
 
         double      timeTaken;
         int         totalOperations;

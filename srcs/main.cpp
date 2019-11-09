@@ -96,12 +96,12 @@ int     main(int ac, char **av)
     }
 
     Puzzle *ogPuzzle = new Puzzle(firstTab, ::size);
+    ogPuzzle->printPuzzle();
     std::cout << std::endl;
 
-    Solver solver(ogPuzzle, 3);
-    ogPuzzle->printPuzzle();
-    //Puzzle *solution = solver.solve("A* Tiles-out", "None");
-    //solution->printPuzzle();
-    //std::cout << (std::to_string(solution->getDepth())) << std::endl;
+    Solver solver(ogPuzzle, ::size);
+    Puzzle *solution = solver.solve("A* Manhattan distance", "None");
+    solution->printPuzzle();
+    std::cout << (std::to_string(solution->getDepth())) << std::endl;
     return (0);
 }

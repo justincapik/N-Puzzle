@@ -42,8 +42,12 @@ Puzzle::Puzzle(Puzzle const & instance):
 Puzzle::~Puzzle(void)
 {
     for (int i = 0; i < this->_size; ++i)
+    {
         delete[] this->_puzzle[i];
+        this->_puzzle[i] = NULL;
+    }
     delete[] this->_puzzle;
+    this->_puzzle = NULL;
 }
 
 /*
@@ -62,7 +66,16 @@ bool    Puzzle::operator==(Puzzle const rhs)
     int     **tmp = rhs.getPuzzle();
 
     if (rhs.getSize() != this->_size)
+    {
+        if (this->_prevPuzzle == NULL)
+            std::cout << "NULL" << std::endl;
+        else
+            std::cout << "pas NULL" << std::endl;
+        std::cout << "1" << std::endl;
+        std::cout << this->_prevPuzzle->getSize() << std::endl;
+        std::cout << "2" << std::endl;
         throw std::runtime_error(std::string("Tried to compare puzzles of different size"));
+    }
     for(int i = 0; i < this->_size; ++i)
         for (int j = 0; j < this->_size; j++)
             if (tmp[i][j] != this->_puzzle[i][j])
@@ -142,17 +155,7 @@ std::vector<Puzzle*>    Puzzle::generatePuzzleFromPosition(void)
         {0, -1}
     };
     int x, y;
-
-    for (x = 0; x < this->_size; ++x)
-    {
-        for (y = 0; y < this->_size; ++y)
-        {
-            if (this->_puzzle[y][x] == 0)
-                break;
-        }
-        if (y != 3 && this->_puzzle[y][x] == 0)
-            break;
-    }
+    this->findNumberinPuzzle(0, &x, &y);
     if (x == this->_size && y == this->_size)
         throw std::runtime_error(std::string("Tried to generate puzzles from puzzle without empty space"));
 
@@ -163,10 +166,20 @@ std::vector<Puzzle*>    Puzzle::generatePuzzleFromPosition(void)
             continue;
         Puzzle *tmp = new Puzzle(*this);
         tmp->swapValues(x, y, x + poss[i][1], y + poss[i][0]);
-        tmp->setPrevPuzzle(this);
+        tmp->setPrevPuzzle(static_cast<Puzzle *>(this));
         tmp->increaseDepth();
         retPoss.push_back(tmp);
     }
 
     return (retPoss);
+}
+
+void    Puzzle::findNumberinPuzzle(int nb, int *x, int *y)
+{
+    for (*y = 0; *y < this->_size; ++(*y))
+        for (*x = 0; *x < this->_size; ++(*x))
+            if (this->_puzzle[*y][*x] == nb)
+                return ;
+    throw std::runtime_error(("couldn't find " + std::to_string(nb)
+        + " in puzzle").c_str());
 }
