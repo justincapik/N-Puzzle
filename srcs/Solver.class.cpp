@@ -189,7 +189,6 @@ bool Solver::isSolvable(int size) {
 
     }
 
-
     if (size % 2 == 0 && p0s % 2 != 0)
         return (inver % 2 != 0);
     return (inver % 2 == 0);

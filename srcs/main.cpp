@@ -7,6 +7,7 @@ using namespace std;
 
 #include "Puzzle.class.hpp"
 #include "Solver.class.hpp"
+#include "Visual.class.hpp"
 
 int size = 0;
 
@@ -62,6 +63,7 @@ int     main(int ac, char **av)
 {
     string algo = "AStarSearch";
     string heuristic = "ManhattanDistance";
+    bool VisualMode = false;
     int **firstTab = NULL;
 
     try {
@@ -75,6 +77,9 @@ int     main(int ac, char **av)
                         break;
                     case 'u':
                         algo = "UniformCost";
+                        break;
+                    case 'v':
+                        VisualMode = true;
                         break;
                     default:
                         throw runtime_error("invalid option: " + static_cast<string>(av[n]));
@@ -102,11 +107,14 @@ int     main(int ac, char **av)
         Puzzle *solution = solver.solve("A* Tiles-out", "None");
         solution->printPuzzle();
         std::cout << (std::to_string(solution->getDepth())) << std::endl;
+        if (VisualMode) {
+            Visual visu(::size);
+            visu.print();
+        }
     }
     catch (exception& e) {
         cout << e.what() << endl;
     }
-
 
     return (0);
 }
