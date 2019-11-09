@@ -17,6 +17,8 @@ class Solver
         std::vector<Puzzle*>    _closedList;
 
         Puzzle                  *genSolution(void);
+        void                    deleteFromVector(int i,
+            std::vector<Puzzle*> *vec);
 
     public:
 
