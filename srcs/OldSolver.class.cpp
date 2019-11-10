@@ -2,9 +2,9 @@
 #include <vector>
 #include <stdexcept>
 #include <valarray>
-#include "Solver.class.hpp"
+#include "OldSolver.class.hpp"
 
-Solver::Solver(Puzzle *original, int size):
+OldSolver::OldSolver(Puzzle *original, int size):
     _original(original), _size(size)
 {
     this->_solution = this->genSolution();
@@ -12,7 +12,7 @@ Solver::Solver(Puzzle *original, int size):
     this->_closedList.reserve(50000);
 }
 
-Solver::~Solver()
+OldSolver::~OldSolver()
 {
     delete this->_original;
     this->_original = NULL;
@@ -36,7 +36,7 @@ Solver::~Solver()
     this->_closedList.clear();
 }
 
-Puzzle    *Solver::solve(std::string heuristicType, std::string searchType)
+Puzzle    *OldSolver::solve(std::string heuristicType, std::string searchType)
 {
     Puzzle      *open;
 
@@ -46,7 +46,6 @@ Puzzle    *Solver::solve(std::string heuristicType, std::string searchType)
     {
         //std::cout << (std::to_string(this->_openList.size())
         //    + ", " + std::to_string(this->_closedList.size())) << std::endl;
-        //TODO: add openlist check for each element
         //TODO: add binary trees instead of vectors
         open = this->_openList.front();
         this->_openList.erase(this->_openList.begin());
@@ -105,7 +104,7 @@ Puzzle    *Solver::solve(std::string heuristicType, std::string searchType)
     return NULL;
 }
 
-int     Solver::calcHeuristic(Puzzle *puzzle, std::string heauristicType)
+int     OldSolver::calcHeuristic(Puzzle *puzzle, std::string heauristicType)
 {
     int **tmp = puzzle->getPuzzle();
     int **sol = this->_solution->getPuzzle();
@@ -153,7 +152,7 @@ int     Solver::calcHeuristic(Puzzle *puzzle, std::string heauristicType)
         throw std::runtime_error(std::string("Invalide heuristic name"));
 }
 
-Puzzle  *Solver::genSolution(void)
+Puzzle  *OldSolver::genSolution(void)
 {
     int **solutionTab = new int*[this->_size];
     for(int i = 0; i < this->_size; ++i)
@@ -186,7 +185,7 @@ Puzzle  *Solver::genSolution(void)
     return solution;
 }
 
-int     Solver::checkIfInClosedList(Puzzle *puzzle)
+int     OldSolver::checkIfInClosedList(Puzzle *puzzle)
 {
     for (std::vector<Puzzle*>::iterator it = this->_closedList.begin();
         it < this->_closedList.end(); ++it)
@@ -197,7 +196,7 @@ int     Solver::checkIfInClosedList(Puzzle *puzzle)
     return (-1);
 }
 
-int     Solver::checkIfInOpenList(Puzzle *puzzle)
+int     OldSolver::checkIfInOpenList(Puzzle *puzzle)
 {
     for (std::vector<Puzzle*>::iterator it = this->_openList.begin();
         it < this->_openList.end(); ++it)
@@ -207,7 +206,7 @@ int     Solver::checkIfInOpenList(Puzzle *puzzle)
     }
     return (-1);
 }
-void    Solver::addToOpenList(Puzzle *puzzle, std::string searchType)
+void    OldSolver::addToOpenList(Puzzle *puzzle, std::string searchType)
 {
     if (puzzle == NULL)
         throw std::runtime_error("Tried to add a NULL pointer to open list");
@@ -228,7 +227,7 @@ void    Solver::addToOpenList(Puzzle *puzzle, std::string searchType)
     (void)searchType; //TODO: for greedy and uniform search
 }
 
-void    Solver::deleteFromVector(int i, std::vector<Puzzle*> *vec)
+void    OldSolver::deleteFromVector(int i, std::vector<Puzzle*> *vec)
 {
     delete vec->at(i);
     //std::cout << static_cast<void*>(this->_closedList.at(i)) << std::endl;

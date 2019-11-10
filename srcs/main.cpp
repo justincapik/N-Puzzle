@@ -5,8 +5,8 @@
 #include <sstream>
 using namespace std;
 
-#include "Puzzle.class.hpp"
-#include "Solver.class.hpp"
+//#include "Puzzle.class.hpp"
+#include "NodeSolver.class.hpp"
 
 int size = 0;
 
@@ -95,13 +95,18 @@ int     main(int ac, char **av)
         return 0;
     }
 
+    /*
     Puzzle *ogPuzzle = new Puzzle(firstTab, ::size);
     ogPuzzle->printPuzzle();
     std::cout << std::endl;
 
-    Solver solver(ogPuzzle, ::size);
+    OldSolver solver(ogPuzzle, ::size);
     Puzzle *solution = solver.solve("A* Manhattan distance", "None");
     solution->printPuzzle();
     std::cout << (std::to_string(solution->getDepth())) << std::endl;
+    */
+
+    NodeSolver solver(firstTab, ::size);
+    solver.solve("", "");
     return (0);
 }

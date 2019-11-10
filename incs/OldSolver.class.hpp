@@ -1,12 +1,12 @@
-#ifndef SOLVER_CLASS_HPP
-#define SOLVER_CLASS_HPP
+#ifndef OLDSOLVER_CLASS_HPP
+#define OLDSOLVER_CLASS_HPP
 
 #include <iostream>
 #include <vector>
 
 #include "Puzzle.class.hpp"
 
-class Solver
+class OldSolver
 {
     private:
         Puzzle*                 _original;
@@ -22,15 +22,15 @@ class Solver
 
     public:
 
-        Solver(Puzzle* original, int size);
-        ~Solver();
+        OldSolver(Puzzle* original, int size);
+        ~OldSolver();
 
         //heuristicType -> "ManhattanDistance", "EuclidianDistance" ...
         //searchType -> "GreedySearch" or "UniformCost"
         Puzzle      *solve(std::string heuristicType, std::string searchType);
         
         int                     calcHeuristic(Puzzle *puzzle,
-            std::string heuristicType); //TODO: actual heuristics
+            std::string heuristicType); 
         void                    addToOpenList(Puzzle *puzzle,
             std::string searchType);
         // returns -1 if the puzzle is not in the closed list,
