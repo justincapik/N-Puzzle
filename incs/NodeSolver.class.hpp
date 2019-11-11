@@ -11,11 +11,12 @@ class NodeSolver
         const int   _size;
         int         _totalsize;
 
-        //maybe don't return void?
-        void        swap(int *a, int *b);
+        void        findNumberinPuzzle(int nb, int *x, int *y, int **puzzle);
+        bool       genNextPuzzle(int **puzzle);
         void        handlePuzzle(int **puzzle);
         Node        *getBestPuzzle(void);
         void        convertNodeToTable(Node *node, int ***tab);
+        void        calculateHeuristic(int **puzzle, int *heuristic, int *depth, std::string heuristicType); //TODO:
 
     public:
         NodeSolver(int **original, int size);
