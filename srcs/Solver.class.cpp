@@ -175,7 +175,9 @@ bool Solver::isSolvable(int size) {
                 convert[size * size - 1] = original[y][x];
             if (original[y][x] == 0)
                 p0s = size - y;
+            std::cout << solution[y][x] << " ";
         }
+        std::cout << std::endl;
     }
 
     int inver = 0;

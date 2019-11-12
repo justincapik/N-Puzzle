@@ -2,11 +2,13 @@
 #define VISUAL_CLASS_HPP
 
 #include "Puzzle.class.hpp"
+#include <ncurses.h>
 
 class Visual
 {
     private:
 		int _size;
+
 
     public:
 
