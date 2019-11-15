@@ -78,7 +78,7 @@ int     main(int ac, char **av)
 {
     string algo = "AStarSearch";
     string heuristic = "ManhattanDistance";
-    bool VisualMode = false;
+    string VisualMode = "";
     int **firstTab = NULL;
 
     try {
@@ -94,7 +94,10 @@ int     main(int ac, char **av)
                         algo = "UniformCost";
                         break;
                     case 'v':
-                        VisualMode = true;
+                        VisualMode = "text";
+                        break;
+                    case 'w':
+                        VisualMode = "web";
                         break;
                     default:
                         throw runtime_error("invalid option: " + static_cast<string>(av[n]));
@@ -122,13 +125,16 @@ int     main(int ac, char **av)
         Puzzle *solution = solver.solve("A* Tiles-out", "None");
         //solution->printPuzzle();
         //std::cout << (std::to_string(solution->getDepth())) << std::endl;
-        if (VisualMode) {
+        if (VisualMode != "") {
             list<int **> sol;
             sol.push_back(firstTab);
             sol.push_back(solution->getPuzzle());
 
             Visual visu(::size);
-            visu.print(sol);
+            if (VisualMode == "text")
+                visu.print(sol);
+            else
+                visu.GenerateWeb(sol);    
         }
     }
     catch (exception& e) {
