@@ -3,6 +3,7 @@
 #include <fstream>
 #include <stdexcept>
 #include <sstream>
+#include <list>
 using namespace std;
 
 #include "Puzzle.class.hpp"
@@ -11,9 +12,20 @@ using namespace std;
 
 int size = 0;
 
+bool    clearTab(int **toClear) {
+    if (toClear) {
+        for (int i = 0; i < ::size; ++i)
+            if (toClear[i])
+                delete[] toClear[i];
+        delete[] toClear;
+    }
+    return true;
+}
+
 int **parsing(string fileName) {
     ifstream file;
     string line;
+    stringstream ss;
     int **ret = NULL;
 
     int y = -1;
@@ -25,7 +37,8 @@ int **parsing(string fileName) {
     while (getline(file, line)) {
         if (line[0] == '#')
             continue;
-        stringstream ss;
+        ss.str("");
+        ss.clear();
         ss << line;
         while (!ss.eof()) {
             unsigned int n;
@@ -34,23 +47,25 @@ int **parsing(string fileName) {
                 ss.clear();
                 if (line[ss.tellg()] == '#')
                     break;
-                else
+                else if (clearTab(ret))
                     throw runtime_error("Invalid file format");
             }
             if (::size == 0) {
                 ::size = n;
                 x = ::size;
                 ret = new int*[n];
+                for (int i = 0; i < (int)n; i++)
+                    ret[i] = new int[n];
             }
             else if (ss.good() || ss.eof()) {
-                if (x == 0)
-                    ret[y] = new int[::size];
-                if (n + 1 > static_cast<unsigned int>(::size * ::size))
+                if (x >= ::size)
+                    break;
+                if (n + 1 > static_cast<unsigned int>(::size * ::size) && clearTab(ret))
                     throw runtime_error("Invalid file format");
                 ret[y][x++] = n;
             }
         }
-        if (x != ::size || ::size > 5 || ::size < 3)
+        if ((x != ::size || ::size > 5 || ::size < 3) && clearTab(ret))
             throw runtime_error("Invalid file format");
         x = 0;
         y++;
@@ -85,31 +100,35 @@ int     main(int ac, char **av)
                         throw runtime_error("invalid option: " + static_cast<string>(av[n]));
                 }
             }
-            else if (!firstTab) {
+            else if (!firstTab)
                 firstTab = parsing(av[n]);
-                cout << ::size << endl;
-            }
         }
     }
     catch (exception& e) {
+        if (firstTab)
+            clearTab(firstTab);
         if (static_cast<string>(e.what()).compare("usage"))
             cout << e.what() << endl << endl;
         cout << "Usage: N-Puzzle [-g] [-u] FileName" << endl
         << "   -g   Use greedy search (default : A*)" << endl
-        << "   -u   Use uniform-cost search" << endl;
+        << "   -u   Use uniform-cost search" << endl
+        << "   -v   Use visualisator mode" << endl;
         return 0;
     }
     try {
         Puzzle *ogPuzzle = new Puzzle(firstTab, ::size);
-        std::cout << std::endl;
 
         Solver solver(ogPuzzle, ::size);
         Puzzle *solution = solver.solve("A* Tiles-out", "None");
-        solution->printPuzzle();
-        std::cout << (std::to_string(solution->getDepth())) << std::endl;
+        //solution->printPuzzle();
+        //std::cout << (std::to_string(solution->getDepth())) << std::endl;
         if (VisualMode) {
+            list<int **> sol;
+            sol.push_back(firstTab);
+            sol.push_back(solution->getPuzzle());
+
             Visual visu(::size);
-            visu.print();
+            visu.print(sol);
         }
     }
     catch (exception& e) {

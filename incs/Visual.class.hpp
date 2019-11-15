@@ -1,8 +1,8 @@
 #ifndef VISUAL_CLASS_HPP
 #define VISUAL_CLASS_HPP
 
-#include "Puzzle.class.hpp"
 #include <ncurses.h>
+#include <list>
 
 class Visual
 {
@@ -14,7 +14,8 @@ class Visual
 
         Visual(int size);
         ~Visual();
-		void print();
+		void print(list<int**>);
+		void GenerateWeb(list<int**>);
 
 };
 
