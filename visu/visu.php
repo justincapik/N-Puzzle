@@ -5,7 +5,7 @@
   <title>N-Puzzle</title>
   <link rel="stylesheet" href="css/bulma.css">
   <link rel="stylesheet" href="css/style.css">
-  <link rel="icon" href="css/icon.png" />
+  <link rel="icon" href="css/puzzle.png" />
 </head>
 <body>
   <section class="hero is-light is-fullheight">
@@ -15,7 +15,7 @@
       <div class="hero-body">
         <div class="container has-text-centered">
           <div class="column is-4 is-offset-4">
-              <div id="container" class="is-invisible box"></div>
+              <div id="box" class="is-invisible box"></div>
 			  <button onclick="launch(this)" class="button is-primary is-large">
 	            Lancer
 	          </button>
@@ -35,25 +35,59 @@
 </body>
 
 <script>
-	function launch(elem) {
+
+	function sleep(ms) {
+	  return new Promise(resolve => setTimeout(resolve, ms));
+	}
+
+	async function launch(elem) {
 		elem.classList.add('is-loading');
         var data = <?php echo json_encode(openFile()) ?>;
-        var container = document.getElementById("container");
+        var box = document.getElementById("box");
         if (data == null) {
-            container.classList.remove('is-invisible');
-            container.innerHTML = "Désolé, il n'y a pas de donnée pour le moment.";
+            box.classList.remove('is-invisible');
+            box.innerHTML = "Désolé, il n'y a pas de donnée pour le moment.";
 		    elem.classList.remove('is-loading');
             return ;
         }
 
-        /*if (data.)
-        var size = data;
-        //document.getElementById("try").innerHTML = data;
-        var container = document.getElementById("container");
+		var size = data.length;
         var table = document.createElement("table");
-        table.classList.add('table');
-        for ()*/
+		table.classList.add('table');
+		table.classList.add('is-bordered');
+        table.classList.add('margin-auto');
 
-        console.log(data);
+		box.innerHTML = "";
+		box.appendChild(table);
+		box.classList.remove('is-invisible');
+        for (var i = 0; i < size; i++) {
+			console.log(i);
+
+
+			createRows(data[i], table, data[size - 1]);
+			await sleep(1000);
+		}
+		elem.classList.remove('is-loading');
+
+
+	}
+
+	function createRows(data, table, soluce) {
+		var size = Math.sqrt(data.length);
+		table.innerHTML = "";
+		var nb = 0;
+		for (var i = 0; i < size; i++) {
+			var row = document.createElement("tr");
+			for (var n = 0; n < size; n++) {
+				var cell = document.createElement("td");
+				if (data[nb] == soluce[nb])
+					cell.classList.add('is-primary');
+
+				cell.appendChild(document.createTextNode(data[nb++]));
+				row.appendChild(cell);
+			}
+			table.appendChild(row);
+			console.log(table);
+		}
 	}
 </script>

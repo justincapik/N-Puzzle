@@ -5060,11 +5060,13 @@ fieldset[disabled] .select select:hover {
 .table.is-bordered td,
 .table.is-bordered th {
   border-width: 1px;
+  border-color: #525252 !important;
 }
 
 .table.is-bordered tr:last-child td,
 .table.is-bordered tr:last-child th {
   border-bottom-width: 1px;
+  border-color: #525252 !important;
 }
 
 .table.is-fullwidth {
