@@ -18,6 +18,7 @@ class Node
         int     heuristic;
         int     depth;
         bool    needToCheck;
+        Node    *lastInSequence;
 
         const int   size;
         
@@ -25,11 +26,11 @@ class Node
         Node        *throwSearch(int **puzzle, int *treeDepth);
 
         //from any node exept bottom ones
-        void        addPuzzleToTree(int **puzzle, int treeDepth, int depth, int heuristic);
+        Node        *addPuzzleToTree(int **puzzle, int treeDepth, int depth, int heuristic);
 
         //only from bottom nodes
         void        closeNode(void);
-        //void        updateBranchToTop(int heuristic, int depth);
+        void        updateBranchToTop(int heuristic, int depth);
 };
 
 #endif

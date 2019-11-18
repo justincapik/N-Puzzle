@@ -1,3 +1,4 @@
+#include <cxxabi.h>
 #include <algorithm>
 #include <iostream>
 #include <cmath>
@@ -9,28 +10,37 @@ NodeSolver::NodeSolver(int **original, const int size):
 {
     this->_base = new Node(size);
     Node    *current = this->_base;
-    Node    *tmp;
 
-    current->heuristic = 0;
-    for (int i = 0; i < size * size; ++i)
-    {
-        current->tab[
-            original[static_cast<int>(std::floor(i / size))][i % size]
-        ] = new Node(*current);
-        tmp = current;
-        current = current->tab[original[static_cast<int>(std::floor(i / size))][i % size]];
-        current->heuristic = 0;
-        current->prev = tmp;
-    }
+    this->_solutionTab = nullptr;
+    this->_solutionNode = nullptr;
     this->_totalsize = size * size;
-    for (int i = 0; i < size; ++i)
-        delete original[i];
-    delete original;
+    
+    current->heuristic = -1;
+    current->depth = -1;
+    current->prev = nullptr;
+    current->needToCheck = true;
+
+    this->_base->addPuzzleToTree(original, 0, 0, 0);
+    this->addSolution();
+
+    for (int i = 0; i < this->_size; ++i)
+    {
+        delete[] original[i];
+        original[i] = nullptr;
+    }
+    delete[] original;
+    original = nullptr;
 }
 
 NodeSolver::~NodeSolver()
 {
     delete this->_base;
+    if (this->_solutionTab != nullptr)
+    {
+        for (int i = 0; i < this->_size; ++i)
+            delete[] this->_solutionTab[i];
+        delete[] this->_solutionTab;
+    }
 }
 
 Node        *NodeSolver::getBestPuzzle(void)
@@ -38,39 +48,48 @@ Node        *NodeSolver::getBestPuzzle(void)
     Node    *tmp = this->_base;
     int     bestidx, bestval;
 
+    std::cout << "looking for best puzzle" << std::endl;
     for (int i = 0; i < this->_totalsize; ++i)
     {
         bestidx = -1;
-        bestval = 1000000;
+        bestval = INT_MAX;
         for (int j = 0; j < this->_totalsize; ++j)
         {
-            if (tmp->tab[j] != NULL && tmp->tab[j]->needToCheck == true
+            if (tmp->tab[j] != nullptr)
+            {
+                std::cout << std::to_string(tmp->tab[j]->heuristic) << " (";
+                std::cout << j << ") " << std::endl;
+            }
+            if (tmp->tab[j] != nullptr && tmp->tab[j]->needToCheck == true
                 && tmp->tab[j]->heuristic < bestval)
             {
                 bestval = tmp->tab[j]->heuristic;
                 bestidx = j;
             }
         }
+        std::cout << " bestidx = " << bestidx << ", bestval = " << bestval;
+        std::cout << ", i = " << i << std::endl;
         if (bestidx == -1)
             throw std::runtime_error("Finished search for best puzzle before the end of the tree's depth");
         tmp = tmp->tab[bestidx];
     }
+    std::cout << "finished looking for best puzzle" << std::endl;
     return tmp;
 }
 
-void        NodeSolver::convertNodeToTable(Node *node, int ***tab)
+void        NodeSolver::convertNodeToTable(Node *node, int **tab)
 {
     Node **tmp;
     for (int i = this->_totalsize - 1; i >= 0; --i)
     {
-        if (node->prev == NULL)
-            throw std::runtime_error("Error while converting node to int**, prev is NULL");
+        if (node->prev == nullptr)
+            throw std::runtime_error("Error while converting node to int**, prev is nullptr");
         if ((tmp = std::find(node->prev->tab,
                 node->prev->tab + this->_totalsize, node))
             == node->prev->tab + this->_totalsize)
             throw std::runtime_error("Error while converting node to int**, node not found in prev");
         
-        (*tab)[static_cast<int>(std::floor(i / this->_size))][i % this->_size] =
+        tab[static_cast<int>(std::floor(i / this->_size))][i % this->_size] =
             tmp - node->prev->tab;
         node = node->prev;
     }
@@ -120,97 +139,186 @@ bool        NodeSolver::genNextPuzzle(int **puzzle)
 }
 
 void        NodeSolver::calculateHeuristic(int **puzzle, int *heuristic,
-    int *depth, std::string heuristicType)
+    int depth, std::string heuristicType)
 {
-    *heuristic = 1;
-    *depth = 0;
+    *heuristic = depth;
     (void)puzzle;
     (void)heuristicType;
 } //TODO:
 
-void        rec(Node *node, std::string *toPrint, int size)
+void        rec(Node *node, std::string *toPrint, int size, int level)
 {
-    static int level = 0;
-
-    //toPrint[level] += "|";
+    if (level >= size)
+        return;
     for (int i = 0; i < size; ++i)
     {
-        if (node->tab[i] != NULL)
+        if (node->tab[i] != nullptr)
         {
-            toPrint[level] += "|";
+            toPrint[level] += " ";
             toPrint[level] += std::to_string(node->tab[i]->heuristic);
-            ++level;
-            rec(node->tab[i], toPrint, size);
-            --level;
+            rec(node->tab[i], toPrint, size, level + 1);
+            if (level == size - 1)
+            {
+                toPrint[level + 1] += " ";
+                toPrint[level + 1] += std::to_string(node->tab[i]->needToCheck);
+                toPrint[level + 2] += " ";
+                toPrint[level + 2] += std::to_string(node->tab[i]->heuristic);
+            }
         }
+    }
+    if (level == size - 1)
+    {
+        toPrint[level + 1] += "|";
+        toPrint[level + 2] += "|";
     }
     toPrint[level] += "|";
 }
 
 void        showTree(Node *base, const int size)
 {
-    std::string  *toPrint = new std::string[size];
-    for (int i = 0; i < size; ++i)
+    std::string  *toPrint = new std::string[size + 2];
+    for (int i = 0; i < size + 2; ++i)
         toPrint[i] = "";
-    rec(base, toPrint, size);
-    for (int i = 0; i < size; ++i)
+    rec(base, toPrint, size, 0);
+    toPrint[size] += " <= needToCheck (1 = true, 0 = false)";
+    toPrint[size + 1] += " <= heuristic value";
+    for (int i = 0; i < size + 2; ++i)
         std::cout << toPrint[i] << std::endl;
     delete[] toPrint;
+}
+
+void        NodeSolver::addSolution(void)
+{
+    int **solutionTab = new int*[this->_size];
+    for(int i = 0; i < this->_size; ++i)
+    {
+        solutionTab[i] = new int[this->_size];
+        for(int j = 0; j < this->_size; ++j)
+            solutionTab[i][j] = 0;
+    }
+
+    int i = 1;
+    int dirX = 1, dirY = 0, dir = 0;
+    int x = 0, y = 0;
+    solutionTab[y][x] = i++;
+    while (i < _size * _size) {
+        while (y + dirY < _size && y + dirY >= 0 && x + dirX < _size && x + dirX >= 0
+        && solutionTab[y + dirY][x + dirX] == 0) {
+            y += dirY;
+            x += dirX;
+            solutionTab[y][x] = i++;
+        }
+        dir = (dir == 3) ? 0 : dir + 1;
+        dirX = (dir == 0) ? 1 : ((dir == 2) ? -1 : 0);
+        dirY = (dir == 1) ? 1 : ((dir == 3) ? -1 : 0);
+    }
+    this->_solutionTab = solutionTab;
+    //int treeDepth;
+    //this->_base->throwSearch(solutionTab, &treeDepth)->addPuzzleToTree(solutionTab, treeDepth, 0, 0);
+}
+
+bool        NodeSolver::checkifsolution(int **puzzle)
+{
+    for (int i = 0; i < this->_size; ++i)
+        for (int j = 0; j < this->_size; ++j)
+            if (puzzle[i][j] != this->_solutionTab[i][j])
+                return false;
+    return true;
 }
 
 Node        *NodeSolver::solve(std::string heuristicType, std::string searchType)
 {
     int     **puzzle;
+    int treeDepth;
+    int heuristic, depth = 0;
 
     puzzle = new int*[this->_size];
     for (int i = 0; i < this->_size; ++i)
         puzzle[i] = new int[this->_size];
 
-    Node    *best = this->getBestPuzzle();
-    this->convertNodeToTable(best, &puzzle);
-    for (int k = 0; k < 4; ++k)
+    std::cout << std::endl;
+    for (int i = 0; i < 200; ++i)
     {
-        if (genNextPuzzle(puzzle) == false)
-            continue;
+
+        Node    *best = this->getBestPuzzle();
+        best->closeNode();
         showTree(this->_base, this->_size * this->_size);
-        
-        int treeDepth;
-        Node *current = this->_base->throwSearch(puzzle, &treeDepth);
-        
-        int heuristic, depth;
-        this->calculateHeuristic(puzzle, &heuristic, &depth, heuristicType);
-        
-        if (treeDepth != this->_totalsize - 1)
-            current->addPuzzleToTree(puzzle, treeDepth, 0, 0);
-        /*
-        else
-        {
-            if (current->heuristic > heuristic)
-            {
-                current->updateBranchToTop(heuristic, depth); //TODO:
-            }
-        }
-        */
+        this->convertNodeToTable(best, puzzle);
         for (int i = 0; i < this->_size; ++i)
         {
             for (int j = 0; j < this->_size; ++j)
                 std::cout << puzzle[i][j];
             std::cout << std::endl;
         }
-        std::cout << "depth = " << treeDepth << std::endl;
-        std::cout << std::endl;
-    }
-    best->closeNode();
-    showTree(this->_base, this->_size * this->_size);
-    /*
-    while(1)
-    {
-    }
-    */
+        std::cout << "best = " << static_cast<void*>(best) << std::endl;
+        for (int k = 0; k < 4; ++k)
+        {
+            if (genNextPuzzle(puzzle) == false)
+                continue;
+            
+            if (this->checkifsolution(puzzle) == true)
+            {
+                std::cout << "all good" << std::endl;
+                for (int i = 0; i < this->_size; ++i)
+                {
+                    for (int j = 0; j < this->_size; ++j)
+                        std::cout << puzzle[i][j];
+                    std::cout << std::endl;
+                }
+                Node *tmp = this->_base->throwSearch(puzzle, &treeDepth)->addPuzzleToTree(puzzle, treeDepth, 0, 0);
+                tmp->lastInSequence = best;
+                return tmp;
+            }
+            Node *current = this->_base->throwSearch(puzzle, &treeDepth);
+            this->calculateHeuristic(puzzle, &heuristic, depth + 1, heuristicType);
+            if (treeDepth < this->_totalsize)
+            {
+                Node* tmp = current->addPuzzleToTree(puzzle, treeDepth, depth + 1, heuristic);
+                tmp->lastInSequence = best;
+                for (int i = 0; i < this->_size; ++i)
+                {
+                    for (int j = 0; j < this->_size; ++j)
+                        std::cout << puzzle[i][j];
+                    std::cout << std::endl;
+                }
+                std::cout << "(adding) ";
+                std::cout << "current = " << static_cast<void*>(current);
+                std::cout << ", best = " << static_cast<void*>(best) << std::endl;
+            }
+            else if (current->heuristic > heuristic)
+            {
+                current->updateBranchToTop(heuristic, depth);
+                current->lastInSequence = best;
+                for (int i = 0; i < this->_size; ++i)
+                {
+                    for (int j = 0; j < this->_size; ++j)
+                        std::cout << puzzle[i][j];
+                    std::cout << std::endl;
+                }
+                std::cout << "(modifying) ";
+                std::cout << "current = " << static_cast<void*>(current);
+                std::cout << ", best = " << static_cast<void*>(best) << std::endl;
+            }
+            else
+            {
+                std::cout << "copy found but didn't add to tree because heuristic was too big" << std::endl;
+            }
+            
+            std::cout << "treeDepth = " << treeDepth << std::endl;
+            std::cout << std::endl;
+        }
+        showTree(this->_base, this->_size * this->_size);
+        std::cout << "end of loop" << std::endl << std::endl;
+        ++depth;
+    
+    }    
+    
+    for (int i = 0; i < this->_size; ++i)
+        delete[] puzzle[i];
+    delete[] puzzle;
+    
     (void)heuristicType;
     (void)searchType;
-    for (int i = 0; i < this->_size; ++i)
-        delete puzzle[i];
-    delete puzzle;
-    return NULL;
+    std::cout << "wtf dude" << std::endl;
+    return nullptr;
 }

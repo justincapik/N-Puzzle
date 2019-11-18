@@ -60,6 +60,7 @@ int **parsing(string fileName) {
 
 int     main(int ac, char **av)
 {
+    /*
     string algo = "AStarSearch";
     string heuristic = "ManhattanDistance";
     int **firstTab = NULL;
@@ -94,7 +95,7 @@ int     main(int ac, char **av)
         << "   -u   Use uniform-cost search" << endl;
         return 0;
     }
-
+    */
     /*
     Puzzle *ogPuzzle = new Puzzle(firstTab, ::size);
     ogPuzzle->printPuzzle();
@@ -106,7 +107,55 @@ int     main(int ac, char **av)
     std::cout << (std::to_string(solution->getDepth())) << std::endl;
     */
 
-    NodeSolver solver(firstTab, ::size);
-    solver.solve("", "");
+    int **firstTab = new int*[3];
+    for (int i = 0; i < 3; ++i)
+        firstTab[i] = new int[3];
+    
+    firstTab[0][0] = 2;
+    firstTab[0][1] = 8;
+    firstTab[0][2] = 3;
+
+    firstTab[1][0] = 1;
+    firstTab[1][1] = 0;
+    firstTab[1][2] = 4;
+
+    firstTab[2][0] = 7;
+    firstTab[2][1] = 6;
+    firstTab[2][2] = 5;
+
+    NodeSolver solver(firstTab, 3);
+    Node *solution = solver.solve("", "");
+    int **tab = new int*[3];
+    for (int i = 0; i < 3; ++i)
+        tab[i] = new int[3];
+    int k = 0;
+    while (solution != NULL)
+    {
+        std::cout << "addr = " << static_cast<void*>(solution) << std::endl;
+        solver.convertNodeToTable(solution, tab);
+        for (int i = 0; i < 3; ++i)
+        {
+            for (int j = 0; j < 3; ++j)
+                std::cout << tab[i][j] << " ";
+            std::cout << std::endl;
+        }
+        std::cout << std::endl;
+        solution = solution->lastInSequence;
+        ++k;
+    }
+    std::cout << "addr = " << static_cast<void*>(solution) << std::endl;
+    //TODO: taking away the heuristic = -1 in closeNode() throws
+    // runtime_error("Finished search for best puzzle before the
+    //end of the tree's depth");
+    //TODO: search should be BFS but is not (but somehow finds the solution?)
+    // look at getBestPuzzle, probably there(?)
+    /*
+    for (int i = 0; i < ::size; ++i)
+        delete[] firstTab[i];
+    delete[] firstTab;
+    */
+   
+    (void)ac;
+    (void)av;
     return (0);
 }
