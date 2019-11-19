@@ -17,10 +17,14 @@ class NodeSolver
         bool        genNextPuzzle(int **puzzle);
         void        handlePuzzle(int **puzzle);
         Node        *getBestPuzzle(void);
-        void        calculateHeuristic(int **puzzle, int *heuristic, int depth, std::string heuristicType); //TODO:
+        void        calculateHeuristic(int **puzzle, double *heuristic, int depth, std::string heuristicType); //TODO:
 
         void        addSolution(void);
         bool        checkifsolution(int **puzzle);
+
+        long long   totalOpenedEver;
+        long long   totalStatesEver;
+        long long   currentClosed;
 
     public:
         NodeSolver(int **original, int size);
