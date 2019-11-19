@@ -123,7 +123,8 @@ int     main(int ac, char **av)
     */
 
     NodeSolver solver(firstTab, ::size);
-    Node *solution = solver.solve("", "");
+    Node *solution = solver.solve("BFS", "");
+    std::cout << sizeof(Node) << std::endl;
     int **tab = new int*[::size];
     for (int i = 0; i < ::size; ++i)
         tab[i] = new int[::size];
