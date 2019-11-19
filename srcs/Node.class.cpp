@@ -10,7 +10,7 @@ size(size)
     
     this->prev = nullptr;
     this->needToCheck = true;
-    this->heuristic = -1;
+    this->heuristic = -1.;
     this->depth = -1;
     this->lastInSequence = nullptr;
 }
@@ -63,7 +63,7 @@ Node        *Node::throwSearch(int **puzzle, int *treeDepth)
     return tmp;
 }
 
-Node        *Node::addPuzzleToTree(int **puzzle, int treeDepth, int depth, int heuristic)
+Node        *Node::addPuzzleToTree(int **puzzle, int treeDepth, int depth, double heuristic)
 {
     Node    *currentDown = this;
     Node    *tmp;
@@ -109,8 +109,6 @@ void        Node::closeNode(void)
     {
         if (prev->needToCheck == false)
             throw std::runtime_error("Encountered needToCheck=false while closing node");
-        if (prev->heuristic != current->heuristic)
-            return;
         
         bool    checkIfOpened = false;
         int     bestidx = -1;
@@ -141,29 +139,17 @@ void        Node::closeNode(void)
                 }
             }
         }
-        if (checkIfOpened == false /*&& prev->tab[bestidx] != current*/) // might opti
-        {
-            prev->heuristic = bestval;
-            prev->depth = prev->tab[bestidx]->depth; 
-            prev->needToCheck = false;
-            current = prev;
-            prev = prev->prev;
-        }
-        else if (checkIfOpened == true)
-        {
-            prev->depth = prev->tab[bestidx]->depth; 
-            prev->heuristic = bestval;
-            //need to check should be true
-            if (prev->needToCheck == false)
-                throw std::runtime_error("needToCheck is false when closing node");
-            return;
-        }
-        else
-            return ;
+        if (bestidx == -1 || bestval == INT_MAX)
+            throw std::runtime_error("Something went horribly wrong while closing a node");
+        prev->heuristic = bestval;
+        prev->depth = prev->tab[bestidx]->depth; 
+        prev->needToCheck = checkIfOpened;
+        current = prev;
+        prev = prev->prev;
     }
 }
 
-void        Node::updateBranchToTop(int heuristic, int depth)
+void        Node::updateBranchToTop(double heuristic, int depth)
 {
     Node    *current = this->prev;
 

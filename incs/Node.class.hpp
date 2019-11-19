@@ -15,7 +15,7 @@ class Node
 
         Node    *prev;
         Node    **tab; //*Node table, not 2d array
-        int     heuristic;
+        double  heuristic;
         int     depth;
         bool    needToCheck;
         Node    *lastInSequence;
@@ -26,11 +26,11 @@ class Node
         Node        *throwSearch(int **puzzle, int *treeDepth);
 
         //from any node exept bottom ones
-        Node        *addPuzzleToTree(int **puzzle, int treeDepth, int depth, int heuristic);
+        Node        *addPuzzleToTree(int **puzzle, int treeDepth, int depth, double heuristic);
 
         //only from bottom nodes
         void        closeNode(void);
-        void        updateBranchToTop(int heuristic, int depth);
+        void        updateBranchToTop(double heuristic, int depth);
 };
 
 #endif
