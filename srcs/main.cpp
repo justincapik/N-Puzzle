@@ -6,8 +6,8 @@
 #include <list>
 using namespace std;
 
-#include "Puzzle.class.hpp"
-#include "Solver.class.hpp"
+//#include "Puzzle.class.hpp"
+#include "NodeSolver.class.hpp"
 #include "Visual.class.hpp"
 
 int size = 0;
@@ -76,6 +76,7 @@ int **parsing(string fileName) {
 
 int     main(int ac, char **av)
 {
+    /*
     string algo = "AStarSearch";
     string heuristic = "ManhattanDistance";
     string VisualMode = "";
@@ -118,28 +119,65 @@ int     main(int ac, char **av)
         << "   -v   Use visualisator mode" << endl;
         return 0;
     }
-    try {
-        Puzzle *ogPuzzle = new Puzzle(firstTab, ::size);
 
-        Solver solver(ogPuzzle, ::size);
-        Puzzle *solution = solver.solve("A* Tiles-out", "None");
-        //solution->printPuzzle();
-        //std::cout << (std::to_string(solution->getDepth())) << std::endl;
-        if (VisualMode != "") {
-            list<int **> sol;
-            sol.push_back(firstTab);
-            sol.push_back(solution->getPuzzle());
+    Puzzle *ogPuzzle = new Puzzle(firstTab, ::size);
+    std::cout << std::endl;
 
-            Visual visu(::size);
-            if (VisualMode == "text")
-                visu.print(sol);
-            else
-                visu.GenerateWeb(sol);    
+    OldSolver solver(ogPuzzle, ::size);
+    Puzzle *solution = solver.solve("A* Manhattan distance", "None");
+    solution->printPuzzle();
+    std::cout << (std::to_string(solution->getDepth())) << std::endl;
+    */
+
+    int **firstTab = new int*[3];
+    for (int i = 0; i < 3; ++i)
+        firstTab[i] = new int[3];
+    
+    firstTab[0][0] = 2;
+    firstTab[0][1] = 8;
+    firstTab[0][2] = 3;
+
+    firstTab[1][0] = 1;
+    firstTab[1][1] = 0;
+    firstTab[1][2] = 4;
+
+    firstTab[2][0] = 7;
+    firstTab[2][1] = 6;
+    firstTab[2][2] = 5;
+
+    NodeSolver solver(firstTab, 3);
+    Node *solution = solver.solve("", "");
+    int **tab = new int*[3];
+    for (int i = 0; i < 3; ++i)
+        tab[i] = new int[3];
+    int k = 0;
+    while (solution != NULL)
+    {
+        std::cout << "addr = " << static_cast<void*>(solution) << std::endl;
+        solver.convertNodeToTable(solution, tab);
+        for (int i = 0; i < 3; ++i)
+        {
+            for (int j = 0; j < 3; ++j)
+                std::cout << tab[i][j] << " ";
+            std::cout << std::endl;
         }
+        std::cout << std::endl;
+        solution = solution->lastInSequence;
+        ++k;
     }
-    catch (exception& e) {
-        cout << e.what() << endl;
-    }
-
+    std::cout << "addr = " << static_cast<void*>(solution) << std::endl;
+    //TODO: taking away the heuristic = -1 in closeNode() throws
+    // runtime_error("Finished search for best puzzle before the
+    //end of the tree's depth");
+    //TODO: search should be BFS but is not (but somehow finds the solution?)
+    // look at getBestPuzzle, probably there(?)
+    /*
+    for (int i = 0; i < ::size; ++i)
+        delete[] firstTab[i];
+    delete[] firstTab;
+    */
+   
+    (void)ac;
+    (void)av;
     return (0);
 }

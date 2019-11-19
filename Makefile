@@ -1,7 +1,7 @@
 NAME = N-Puzzle
 
-SRC		=	Puzzle.class.cpp\
-			Solver.class.cpp\
+SRC		=	Node.class.cpp\
+			NodeSolver.class.cpp\
 			Visual.class.cpp\
 			main.cpp
 
