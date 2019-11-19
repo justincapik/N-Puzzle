@@ -3,23 +3,28 @@
 #include <time.h>
 #include <sstream>
 #include <fstream>
+#include <iostream>
+
 
 using namespace std;
 #include "Visual.class.hpp"
 
-Visual::Visual(int size) : _size(size) {
-	initscr();
-	noecho();
-	start_color();
-	timeout(0);
-	cbreak();
-	curs_set(0);
-	init_pair(1, COLOR_WHITE, COLOR_BLACK);
-	init_pair(2, COLOR_GREEN, COLOR_BLACK);
+Visual::Visual(int size, string type) : _size(size), _type(type) {
+	if (_type != "web") {
+		initscr();
+		noecho();
+		start_color();
+		timeout(0);
+		cbreak();
+		curs_set(0);
+		init_pair(1, COLOR_WHITE, COLOR_BLACK);
+		init_pair(2, COLOR_GREEN, COLOR_BLACK);
+	}
 }
 
 Visual::~Visual() {
-	endwin();
+	if (_type != "web")
+		endwin();
 }
 
 void Visual::print(list<int**> solution) {
@@ -30,7 +35,7 @@ void Visual::print(list<int**> solution) {
 	time_t start = time(NULL);
 	while(input != 27) {
         stringstream ss;
-		if (time(NULL) - 2 > start && tmp != solution.end()) {
+		if (time(NULL) - 1 > start && tmp != solution.end()) {
 			start = time(NULL);
 			tmp++;
 			if (tmp != solution.end())

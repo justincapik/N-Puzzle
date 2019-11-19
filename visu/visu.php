@@ -60,12 +60,13 @@
 		box.innerHTML = "";
 		box.appendChild(table);
 		box.classList.remove('is-invisible');
+        console.log(300 + (200 * (10 / size)));
         for (var i = 0; i < size; i++) {
 			console.log(i);
 
 
 			createRows(data[i], table, data[size - 1]);
-			await sleep(1000);
+			await sleep(300 + (100 * (10 / size)));
 		}
 		elem.classList.remove('is-loading');
 
@@ -73,21 +74,19 @@
 	}
 
 	function createRows(data, table, soluce) {
-		var size = Math.sqrt(data.length);
+		var size = Math.round(Math.sqrt(data.length));
 		table.innerHTML = "";
 		var nb = 0;
 		for (var i = 0; i < size; i++) {
 			var row = document.createElement("tr");
 			for (var n = 0; n < size; n++) {
 				var cell = document.createElement("td");
-				if (data[nb] == soluce[nb])
+				if (data[nb] == soluce[nb] || (data[nb] == 0 && soluce[nb] == 0))
 					cell.classList.add('is-primary');
-
 				cell.appendChild(document.createTextNode(data[nb++]));
 				row.appendChild(cell);
 			}
 			table.appendChild(row);
-			console.log(table);
 		}
 	}
 </script>

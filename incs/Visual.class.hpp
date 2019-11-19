@@ -8,11 +8,12 @@ class Visual
 {
     private:
 		int _size;
+		std::string _type;
 
 
     public:
 
-        Visual(int size);
+        Visual(int, std::string);
         ~Visual();
 		void print(list<int**>);
 		void GenerateWeb(list<int**>);

@@ -79,6 +79,7 @@ int     main(int ac, char **av)
     string algo = "AStarSearch";
     string heuristic = "ManhattanDistance";
     string VisualMode = "";
+
     int **firstTab = NULL;
 
     try {
@@ -127,23 +128,9 @@ int     main(int ac, char **av)
     solution->printPuzzle();
     std::cout << (std::to_string(solution->getDepth())) << std::endl;
     */
-    /*
-    int **firstTab = new int*[3];
-    for (int i = 0; i < 3; ++i)
-        firstTab[i] = new int[3];
-    
-    firstTab[0][0] = 2;
-    firstTab[0][1] = 6;
-    firstTab[0][2] = 0;
 
-    firstTab[1][0] = 5;
-    firstTab[1][1] = 3;
-    firstTab[1][2] = 7;
-
-    firstTab[2][0] = 8;
-    firstTab[2][1] = 1;
-    firstTab[2][2] = 4;
-    */
+    list<int**> soluce;
+    Visual visu(::size, VisualMode);
 
     NodeSolver solver(firstTab, ::size);
     Node *solution = solver.solve("", "");
@@ -151,9 +138,13 @@ int     main(int ac, char **av)
     for (int i = 0; i < ::size; ++i)
         tab[i] = new int[::size];
     int k = 0;
+
     while (solution != NULL)
     {
         //std::cout << "addr = " << static_cast<void*>(solution) << std::endl;
+        int **tab = new int*[::size];
+        for (int i = 0; i < ::size; ++i)
+            tab[i] = new int[::size];
         solver.convertNodeToTable(solution, tab);
         for (int i = 0; i < ::size; ++i)
         {
@@ -161,16 +152,29 @@ int     main(int ac, char **av)
                 std::cout << tab[i][j] << " ";
             std::cout << std::endl;
         }
+        if (VisualMode != "")
+            soluce.push_front(tab);
         std::cout << std::endl;
         solution = solution->lastInSequence;
         ++k;
     }
+    if (VisualMode != "") {
+        if (VisualMode == "web")
+            visu.GenerateWeb(soluce);
+        else if (VisualMode == "text")
+            visu.print(soluce);
+
+    	for (list<int**>::iterator it = soluce.begin(); it != soluce.end(); it++) {
+    		for (int n = 0; n < ::size; n++)
+                delete (*it)[n];
+            delete (*it);
+    	}
+    }
     //std::cout << "addr = " << static_cast<void*>(solution) << std::endl;
-    /*
-    for (int i = 0; i < ::size; ++i)
-        delete[] firstTab[i];
-    delete[] firstTab;
-    */
+
+
+
+
     (void)ac;
     (void)av;
     return (0);
