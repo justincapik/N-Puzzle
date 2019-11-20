@@ -5,6 +5,11 @@
 #include "NodeSolver.class.hpp"
 #include "Node.class.hpp"
 
+unsigned long long factorial(long long n)
+{
+  return (n == 1 || n == 0) ? 1 : factorial(n - 1) * n;
+}
+
 NodeSolver::NodeSolver(int **original, const int size):
     _size(size)
 {
@@ -59,7 +64,7 @@ Node        *NodeSolver::getBestPuzzle(void)
     for (int i = 0; i < this->_totalsize; ++i)
     {
         bestidx = -1;
-        bestval = INT_MAX;
+        bestval = __DBL_MAX__;
         for (int j = 0; j < this->_totalsize; ++j)
         {
             /*
@@ -214,6 +219,7 @@ void        rec(Node *node, std::string *toPrint, int size, int level)
         {
             toPrint[level] += " ";
             toPrint[level] += std::to_string(/*static_cast<int>*/(node->tab[i]->heuristic));
+            toPrint[level] += "(" + std::to_string(node->tab[i]->needToCheck) + ")";
             rec(node->tab[i], toPrint, size, level + 1);
             if (level == size - 1)
             {
@@ -300,14 +306,14 @@ Node        *NodeSolver::solve(std::string heuristicType, std::string searchType
         puzzle[i] = new int[this->_size];
 
     std::cout << std::endl;
-    while(1)
+    while (1)
     {
         //showTree(this->_base, this->_size * this->_size);
 
         Node    *best = this->getBestPuzzle();
         //std::cout << "best node heuristic = " << best->heuristic << std::endl;
         //if (oldHeuristic > best->heuristic)
-            //throw std::runtime_error("Heuristic order wrongly chosen");
+        //    throw std::runtime_error("Heuristic order wrongly chosen");
         oldHeuristic = best->heuristic;
         best->closeNode();
         ++this->currentClosed;
@@ -331,6 +337,8 @@ Node        *NodeSolver::solve(std::string heuristicType, std::string searchType
             std::cout << "total nodes => " << this->totalNodes << std::endl;
             std::cout << "ratio nodes/states => " << static_cast<double>(this->totalNodes) / this->totalStatesEver << std::endl;
             std::cout << "depth => " << best->depth + 1 << std::endl;
+            std::cout << "percentage of possible states checked => "
+                << (this->totalStatesEver * 100.)/ (factorial(this->_totalsize) / 2) << std::endl;
             std::cout << std::endl;
         }
         for (int k = 0; k < 4; ++k)
@@ -357,6 +365,8 @@ Node        *NodeSolver::solve(std::string heuristicType, std::string searchType
                 std::cout << "total nodes => " << this->totalNodes << std::endl;
                 std::cout << "ratio nodes/states => " << static_cast<double>(this->totalNodes) / this->totalStatesEver << std::endl;
                 std::cout << "depth => " << best->depth + 1 << std::endl;
+                std::cout << "percentage of possible states checked => "
+                    << (this->totalStatesEver * 100.)/ (factorial(this->_totalsize) / 2) << std::endl;
                 Node *tmp = this->_base->throwSearch(puzzle, &treeDepth)->addPuzzleToTree(puzzle, treeDepth, 0, 0);
                 tmp->lastInSequence = best;
                 for (int i = 0; i < this->_size; ++i)

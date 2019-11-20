@@ -6,7 +6,7 @@
 using namespace std;
 
 //#include "Puzzle.class.hpp"
-#include "NodeSolver.class.hpp"
+#include "PRQSolver.class.hpp"
 
 int size = 0;
 
@@ -122,9 +122,16 @@ int     main(int ac, char **av)
     firstTab[2][2] = 4;
     */
 
+    /*
     NodeSolver solver(firstTab, ::size);
-    Node *solution = solver.solve("BFS", "");
+    Node *solution = solver.solve("AED", "");
     std::cout << sizeof(Node) << std::endl;
+    */
+
+    PRQSolver solver(firstTab, ::size);
+    PRQPuzzle *solution = solver.solve("BFS", "");
+    (void)solution;
+    /*
     int **tab = new int*[::size];
     for (int i = 0; i < ::size; ++i)
         tab[i] = new int[::size];
@@ -143,6 +150,7 @@ int     main(int ac, char **av)
         solution = solution->lastInSequence;
         ++k;
     }
+    */
     //std::cout << "addr = " << static_cast<void*>(solution) << std::endl;
     /*
     for (int i = 0; i < ::size; ++i)
