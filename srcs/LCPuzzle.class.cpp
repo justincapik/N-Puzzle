@@ -1,34 +1,30 @@
 #include <iostream>
 #include <stdexcept>
 
-#include "PRQPuzzle.class.hpp"
+#include "LCPuzzle.class.hpp"
 
-PRQPuzzle::PRQPuzzle():
-    _size(-1)
-{
-    this->_puzzle = nullptr;
-    this->_heuristic = -1;
-    this->_depth = -1;
-    this->prevInSolution = nullptr;
-    this->next = nullptr;
-}
-
-PRQPuzzle::PRQPuzzle(int **puzzle, int size, int heuristic, int depth):
+LCPuzzle::LCPuzzle(int **puzzle, int size, double heuristic, int depth):
 _puzzle(puzzle), _size(size), _heuristic(heuristic), _depth(depth)
 {
+    //std::cout << "mutipul paramter instanciation ("
+    //    << static_cast<void*>(this) << ")" << std::endl;
     this->prevInSolution = nullptr;
+    this->next = nullptr;
+    this->_hash = this->hashPuzzle(puzzle);
 }
 
-PRQPuzzle::PRQPuzzle(PRQPuzzle const & instance):
-    _size(instance.getSize())
+LCPuzzle::LCPuzzle(LCPuzzle const & instance): _size(instance.getSize()), _heuristic(instance.getHeuristic()),
+    _depth(instance.getDepth()), _hash(instance.getHash())
 {
+    //std::cout << "instanced with copy (" << static_cast<void*>(this)
+    //    << ")" << std::endl;
     this->_heuristic = instance.getHeuristic();
     this->_depth = instance.getDepth();
     
     this->_puzzle = new int*[this->_size];
     for (int i = 0; i < this->_size; i++)
         this->_puzzle[i] = new int[this->_size];
-    int **tmp = instance.getPRQPuzzle();
+    int **tmp = instance.getPuzzle();
     for (int y = 0; y < this->_size; ++y)
     {
         for (int x = 0; x < this->_size; ++x)
@@ -38,7 +34,7 @@ PRQPuzzle::PRQPuzzle(PRQPuzzle const & instance):
     this->next = nullptr;
 }
 
-PRQPuzzle::~PRQPuzzle(void)
+LCPuzzle::~LCPuzzle(void)
 {
     for (int i = 0; i < this->_size; ++i)
     {
@@ -49,54 +45,66 @@ PRQPuzzle::~PRQPuzzle(void)
     this->_puzzle = nullptr;
 }
 
-bool        PRQPuzzle::operator==(PRQPuzzle const rhs)
+bool        LCPuzzle::compare(LCPuzzle rhs) const
 {
-    int     **tmp = rhs.getPRQPuzzle();
+    int     **tmp = rhs.getPuzzle();
 
+    //std::cout << "calling == operator" << std::endl;
     if (rhs.getSize() != this->_size)
     {
         printf("lhs size = %d, rhs size = %d\n", this->_size, rhs.getSize());
-        std::cout << static_cast<void*>(this) << std::endl;
+        printf("rhs size = %d, lhs size = %d\n", rhs.getSize(), this->_size);
         throw std::runtime_error(std::string("Tried to compare puzzles of different size"));
     }
+    //if (this->_hash != rhs.getHash())
+    //    return (false);
     for(int i = 0; i < this->_size; ++i)
         for (int j = 0; j < this->_size; j++)
             if (tmp[i][j] != this->_puzzle[i][j])
+            {
+                //std::cout << "finished == operator" << std::endl;
                 return (false);
+            }
+    //std::cout << "finished == operator" << std::endl;
     return (true);
 }
 
-int         **PRQPuzzle::getPRQPuzzle(void) const
+int         **LCPuzzle::getPuzzle(void) const
 {
     return this->_puzzle;
 }
 
-int         PRQPuzzle::getSize(void) const
+int         LCPuzzle::getSize(void) const
 {
     return this->_size;
 }
 
-int         PRQPuzzle::getHeuristic(void) const
+size_t      LCPuzzle::getHash(void) const
+{
+    return this->_hash;
+}
+
+double         LCPuzzle::getHeuristic(void) const
 {
     return this->_heuristic;
 }
 
-void        PRQPuzzle::setHeuritic(int heuristic)
+void        LCPuzzle::setHeuritic(double heuristic)
 {
     this->_heuristic = heuristic;
 }
 
-int         PRQPuzzle::getDepth(void) const
+int         LCPuzzle::getDepth(void) const
 {
     return this->_depth;
 }
 
-void        PRQPuzzle::increaseDepth(void)
+void        LCPuzzle::increaseDepth(void)
 {
     ++(this->_depth);
 }
 
-void        PRQPuzzle::printPRQPuzzle(int tabs) const
+void        LCPuzzle::printPuzzle(int tabs) const
 {
     for(int y = 0; y < this->_size; ++y)
     {
@@ -108,7 +116,7 @@ void        PRQPuzzle::printPRQPuzzle(int tabs) const
     }
 }
 
-void        PRQPuzzle::swapValues(int x1, int y1,
+void        LCPuzzle::swapValues(int x1, int y1,
     int x2, int y2)
 {
     int     tmp;
@@ -118,13 +126,13 @@ void        PRQPuzzle::swapValues(int x1, int y1,
     this->_puzzle[y2][x2] = tmp;
 }
 
-PRQPuzzle   *PRQPuzzle::generatePRQPuzzleFromPosition(void)
+LCPuzzle   *LCPuzzle::generatePuzzleFromPosition(void)
 {
-    PRQPuzzle   *retPoss = nullptr, *current = nullptr;
+    LCPuzzle   *retPoss = nullptr, *current = nullptr;
     int poss[4][2] = {{1, 0}, {0, 1}, {-1, 0}, {0, -1}};
     int x, y;
 
-    this->findNumberinPRQPuzzle(0, &x, &y);
+    this->findNumberinLCPuzzle(0, &x, &y);
     if (x == this->_size || y == this->_size)
         throw std::runtime_error("Tried to generate puzzles from puzzle without empty space");
 
@@ -133,7 +141,7 @@ PRQPuzzle   *PRQPuzzle::generatePRQPuzzleFromPosition(void)
         if (y + poss[i][0] < 0 || y + poss[i][0] >= this->_size
             || x + poss[i][1] < 0 || x + poss[i][1] >= this->_size)
             continue;
-        PRQPuzzle *tmp = new PRQPuzzle(*this);
+        LCPuzzle *tmp = new LCPuzzle(*this);
         tmp->swapValues(x, y, x + poss[i][1], y + poss[i][0]);
         tmp->prevInSolution = this;
         tmp->increaseDepth();
@@ -148,12 +156,10 @@ PRQPuzzle   *PRQPuzzle::generatePRQPuzzleFromPosition(void)
             current = tmp;
         }
     }
-
-
     return (retPoss);
 }
 
-void    PRQPuzzle::findNumberinPRQPuzzle(int nb, int *x, int *y)
+void    LCPuzzle::findNumberinLCPuzzle(int nb, int *x, int *y)
 {
     for (*y = 0; *y < this->_size; ++(*y))
         for (*x = 0; *x < this->_size; ++(*x))
@@ -161,4 +167,15 @@ void    PRQPuzzle::findNumberinPRQPuzzle(int nb, int *x, int *y)
                 return ;
     throw std::runtime_error(("couldn't find " + std::to_string(nb)
         + " in puzzle").c_str());
+}
+
+size_t  LCPuzzle::hashPuzzle(int **puzzle)
+{
+    std::hash<std::string> hasher;
+    std::string str = "";
+    
+    for (int i = 0; i < this->_size; ++i)
+        for (int j = 0; j < this->_size; ++j)
+            str += std::to_string(puzzle[i][j]);
+    return hasher(str);
 }
