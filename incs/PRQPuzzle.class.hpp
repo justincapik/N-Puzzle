@@ -1,7 +1,10 @@
-#ifndef LCPUZZLE_CLASS_HPP
-# define LCPUZZLE_CLASS_HPP
+#ifndef PRQPUZZLE_CLASS_HPP
+# define PRQPUZZLE_CLASS_HPP
 
-class LCPuzzle
+#include <iostream>
+#include <vector>
+
+class PRQPuzzle
 {
     private:
         int         **_puzzle;
@@ -10,15 +13,15 @@ class LCPuzzle
         int         _depth;
         size_t      _hash;
 
-        size_t      hashPuzzle(int **puzzle) const;
+        size_t      hashPuzzle(int **puzzle);
 
     public:
 
-        LCPuzzle(int **puzzle, int size, double heuristic=0, int depth=0);
-        LCPuzzle(LCPuzzle const & instance);
-        ~LCPuzzle();
+        PRQPuzzle(int **puzzle, int size, double heuristic=0, int depth=0);
+        PRQPuzzle(PRQPuzzle const & instance);
+        ~PRQPuzzle();
 
-        bool    compare(LCPuzzle const rhs) const;
+        bool    compare(PRQPuzzle const rhs) const;
 
         int     **getPuzzle(void) const;
         int     getSize(void) const;
@@ -31,13 +34,12 @@ class LCPuzzle
 
         void    printPuzzle(int tabs=0) const;
 
-        void    findNumberinLCPuzzle(int nb, int *x, int *y);
+        void    findNumberinPuzzle(int nb, int *x, int *y);
 
         void        swapValues(int x1, int y1, int x2, int y2);
-        LCPuzzle*  generatePuzzleFromPosition(void);
+        std::vector<PRQPuzzle*>    generatePuzzleFromPosition(void);
 
-        LCPuzzle   *next;
-        LCPuzzle   *prevInSolution;
+        PRQPuzzle   *prevInSolution;
 };
 
 

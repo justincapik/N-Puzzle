@@ -1,7 +1,7 @@
 NAME = N-Puzzle
 
-SRC		=	LCPuzzle.class.cpp\
-			LCSolver.class.cpp\
+SRC		=	PRQPuzzle.class.cpp\
+			PRQSolver.class.cpp\
 			main.cpp
 
 SRCDIR = srcs

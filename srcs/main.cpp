@@ -6,7 +6,10 @@
 using namespace std;
 
 //#include "Puzzle.class.hpp"
-#include "LCSolver.class.hpp"
+#include "PRQPuzzle.class.hpp"
+#include "PRQSolver.class.hpp"
+//#include "LCSolver.class.hpp"
+//#include "LCPuzzle.class.hpp"
 
 int size = 0;
 
@@ -128,16 +131,23 @@ int     main(int ac, char **av)
     std::cout << sizeof(Node) << std::endl;
     */
 
-    LCSolver solver(firstTab, ::size);
-    LCPuzzle *solution = solver.solve("AED", "UCS");
+    PRQSolver solver(firstTab, ::size);
     
+    PRQPuzzle *solution = solver.solve("AED", "UCS");
+    (void)solution;
+    /*
     while(solution != nullptr)
     {
         solution->printPuzzle();
         std::cout<< std::endl;
         solution = solution->prevInSolution;
     }
-    
+    */
+    //std::cout << test->getHash() << std::endl;
+    //PRQPuzzle test2(*test);
+    //std::cout << test2.getHash() << std::endl;
+
+
     /*
     int **tab = new int*[::size];
     for (int i = 0; i < ::size; ++i)

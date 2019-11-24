@@ -3,7 +3,9 @@
 #include <valarray>
 #include "LCSolver.class.hpp"
 
-//change generatePuzzleFromPosition to 
+// TODO: list
+// change generatePuzzleFromPosition to send std::vector
+// 
 
 LCSolver::LCSolver(int **original, int size):
     _size(size)
@@ -70,10 +72,8 @@ LCPuzzle    *LCSolver::solve(std::string heuristicType, std::string searchType)
     LCPuzzle      *best;
 
     while (this->_openList != nullptr)
+    //for (int i = 0; i < 100; ++i)
     {
-        if (this->totalOpenStates % 100 == 0)
-            std::cout << "total opened states = "
-                << this->totalOpenStates << std::endl;
         best = this->getNextAndUpdateOpenList();
 
         LCPuzzle*  generated = best->generatePuzzleFromPosition();
