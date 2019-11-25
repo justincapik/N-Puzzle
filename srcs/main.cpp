@@ -6,7 +6,6 @@
 #include <list>
 using namespace std;
 
-//#include "Puzzle.class.hpp"
 #include "Visual.class.hpp"
 #include "PRQSolver.class.hpp"
 #include "PRQPuzzle.class.hpp"
@@ -130,13 +129,13 @@ int     main(int ac, char **av)
     std::cout << (std::to_string(solution->getDepth())) << std::endl;
     */
 
+   /*
     list<int**> soluce;
     Visual visu(::size, VisualMode);
 
     firstTab[2][0] = 8;
     firstTab[2][1] = 1;
     firstTab[2][2] = 4;
-    */
 
     NodeSolver solver(firstTab, ::size);
     Node *solution = solver.solve("AED", "");
@@ -204,5 +203,6 @@ int     main(int ac, char **av)
 
     (void)ac;
     (void)av;
+    */
     return (0);
 }

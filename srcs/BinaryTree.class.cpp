@@ -1,4 +1,4 @@
-#include "../incs/BinaryTree.class.hpp"
+#include "BinaryTree.class.hpp"
 #include <iostream>
 using namespace std;
 
@@ -23,9 +23,9 @@ void BinaryTree<T>::freeNodes(_node* _node) {
 }
 
 template <class T>
-void BinaryTree<T>::add(T *var) {
+void BinaryTree<T>::add(T var) {
 	_node* newNode = new _node;
-	newNode->data = var;
+	newNode->data = &var;
 	newNode->left = NULL;
 	newNode->right = NULL;
 
@@ -39,16 +39,16 @@ void BinaryTree<T>::add(T *var) {
 		cout << "1" << endl;
 		_node *tree = this->_root;
 		while (tree) {
-			cout << "check : " << tree->data->getHash() << endl;
+			cout << "check : " << (*tree->data)->getHash() << endl;
 			parent = tree;
-			if (var->getHash() > tree->data->getHash())
+			if (var->getHash() > (*tree->data)->getHash())
 				tree = tree->left;
 			else
 				tree = tree->right;
 			if (tree)
-				cout << "go to : " << tree->data->getHash() << endl;
+				cout << "go to : " << (*tree->data)->getHash() << endl;
 		}
-		if (var->getHash() > parent->data->getHash())
+		if (var->getHash() > (*parent->data)->getHash())
 			parent->left = newNode;
 		else
 			parent->right = newNode;
@@ -60,7 +60,7 @@ template <class T>
 void BinaryTree<T>::replace(_node *replaced) {
 	_node *tree = this->_root;
 	while(tree) {
-		if (replaced->data->getHash() > tree->data->getHash())
+		if ((*replaced->data)->getHash() > (*tree->data)->getHash())
 			tree = tree->left;
 		else
 			tree = tree->right;
@@ -70,30 +70,30 @@ void BinaryTree<T>::replace(_node *replaced) {
 }
 
 template <class T>
-bool BinaryTree<T>::isInTree(T *var) {
+T	BinaryTree<T>::isInTree(T var) {
 	if (this->_root == NULL)
-		return false;
+		return nullptr;
 	else {
 		_node *tree = this->_root;
-		while (tree) {
-			if (var->getHash() == tree->data->getHash())
-				return true;
-			else if (var->getHash() > tree->data->getHash())
+		while (tree && (*tree->data)) {
+			if (var->getHash() == (*tree->data)->getHash())
+				return *(tree->data);
+			else if (var->getHash() > (*tree->data)->getHash())
 				tree = tree->left;
 			else
 				tree = tree->right;
 		}
 	}
-	return false;
+	return nullptr;
 }
 
 template <class T>
-void BinaryTree<T>::remove(T *var) {
+void BinaryTree<T>::remove(T var) {
 	_node *tree = this->_root;
 	_node *parent;
-	while (var->getHash() != tree->data->getHash()) {
+	while (var->getHash() != (*tree->data)->getHash()) {
 		parent = tree;
-		if (var->getHash() > tree->data->getHash())
+		if (var->getHash() > (*tree->data)->getHash())
 			tree = tree->left;
 		else
 			tree = tree->right;

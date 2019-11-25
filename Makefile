@@ -3,6 +3,7 @@ NAME = N-Puzzle
 SRC		=	PRQPuzzle.class.cpp\
 			PRQSolver.class.cpp\
 			Visual.class.cpp\
+			BinaryTree.class.cpp\
 			main.cpp
 
 SRCDIR = srcs

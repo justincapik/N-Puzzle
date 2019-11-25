@@ -26,10 +26,10 @@ class BinaryTree
 	    ~BinaryTree();
 
 		void freeNodes(_node* _node);
-		void add(T *var);
+		void add(T var);
 		void replace(_node *replaced);
-		bool isInTree(T *var);
-		void remove(T *var);
+		T	 isInTree(T var);
+		void remove(T var);
 };
 
 #endif

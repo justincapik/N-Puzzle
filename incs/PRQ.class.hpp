@@ -31,8 +31,8 @@ class PriorityQueue
 
         void    add(T var)
         {
-            std::cout << "=> started ADDING " << var->getHeuristic()
-                << "\t(" << static_cast<void*>(var) << ")" << std::endl;
+            //std::cout << "=> started ADDING " << var->getHeuristic()
+            //    << "\t(" << static_cast<void*>(var) << ")" << std::endl;
             this->_data[this->_cursor] = var;
             long long tmp = this->_cursor;
             
@@ -52,8 +52,8 @@ class PriorityQueue
                 return nullptr;
 
             T top = this->_data[1];
-            std::cout << "=> REMOVING " << top->getHeuristic()
-                << "\t(" << static_cast<void*>(top) << ")" << std::endl;
+            //std::cout << "=> REMOVING " << top->getHeuristic()
+            //    << "\t(" << static_cast<void*>(top) << ")" << std::endl;
             long long tmp = 1;
 
             std::swap(this->_data[1], this->_data[this->_cursor - 1]);

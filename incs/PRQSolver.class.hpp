@@ -3,7 +3,8 @@
 
 #include <iostream>
 
-#include "BT.class.hpp"
+#include "BinaryTree.class.hpp"
+#include "../srcs/BinaryTree.class.cpp"
 #include "PRQ.class.hpp"
 #include "PRQPuzzle.class.hpp"
 

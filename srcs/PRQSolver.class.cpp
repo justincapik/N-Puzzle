@@ -2,7 +2,6 @@
 #include <stdexcept>
 #include <valarray>
 #include "PRQSolver.class.hpp"
-#include "BT.class.hpp"
 #include "PRQ.class.hpp"
 #include "PRQPuzzle.class.hpp"
 
@@ -80,9 +79,8 @@ PRQPuzzle   *PRQSolver::uniformCostSearch(std::vector<PRQPuzzle*> generated,
             return (*it);
         }
 
-        //PRQPuzzle   *closed;
+        PRQPuzzle   *closed;
         (*it)->setHeuritic(this->calcHeuristic((*it), heuristicType));
-        /*
         if (checkIfInClosedList(*it, &closed))
         {
             if (closed->getHeuristic() <= (*it)->getHeuristic())
@@ -98,7 +96,11 @@ PRQPuzzle   *PRQSolver::uniformCostSearch(std::vector<PRQPuzzle*> generated,
             }
         
         }
-        */
+        else
+        {
+            this->addToOpenList((*it));
+            (*it)->prevInSolution = best;
+        }
         /*
         else if (checkIfInOpenList((*it)))
         {
@@ -115,11 +117,6 @@ PRQPuzzle   *PRQSolver::uniformCostSearch(std::vector<PRQPuzzle*> generated,
             }
         }
         */
-        //else
-        //{
-            this->addToOpenList((*it));
-            (*it)->prevInSolution = best;
-        //}
     }
     return nullptr;
 }
@@ -219,9 +216,12 @@ PRQPuzzle  *PRQSolver::genSolution(void)
 /* À modifier à partir d'ici */
 bool    PRQSolver::checkIfInClosedList(PRQPuzzle *generated, PRQPuzzle **closed)
 {
-    (void)generated;
-    (void)closed;
-    return false;
+    std::cout << "check closed list" << std::endl;
+    if ((*closed = this->_closedList.isInTree(generated)) == nullptr)
+        return false;
+    else
+        return true;
+    std::cout << "check closed list end" << std::endl;
 }
 
 //DO NOT USED (inefficient)
@@ -238,7 +238,9 @@ void    PRQSolver::addToOpenList(PRQPuzzle *puzzle)
 
 void    PRQSolver::addToClosedList(PRQPuzzle *puzzle)
 {
-    (void)puzzle;
+    std::cout << "add to closed" << std::endl;
+    this->_closedList.add(puzzle);
+    std::cout << "add to closed end" << std::endl;
 }
 
 PRQPuzzle   *PRQSolver::getNextAndUpdateOpenList(void)
@@ -248,7 +250,9 @@ PRQPuzzle   *PRQSolver::getNextAndUpdateOpenList(void)
 
 void        PRQSolver::deleteFromClosedList(PRQPuzzle *prevClosed)
 {
-    (void)prevClosed;
+    std::cout << "remove from closed" << std::endl;
+    this->_closedList.remove(prevClosed);
+    std::cout << "remove from closed end" << std::endl;
 }
 
 void        PRQSolver::deleteFromOpenList(PRQPuzzle *prevOpen)
