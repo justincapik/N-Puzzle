@@ -8,7 +8,6 @@
 
 // TODO: list
 // change generatePuzzleFromPosition to send std::vector
-// 
 
 PRQSolver::PRQSolver(int **original, int size):
     _size(size)
@@ -37,7 +36,7 @@ PRQPuzzle    *PRQSolver::solve(std::string heuristicType, std::string searchType
     if (this->_openList.getTop()->compare(*(this->_solutionPuzzle)))
         return this->_openList.getTop();
     //while (this->_openList.getTop() != nullptr)
-    for (int i = 0; i < 10 && this->_openList.getTop() != nullptr; ++i)
+    for (int i = 0; i < 50 && this->_openList.getTop() != nullptr; ++i)
     {
         best = this->getNextAndUpdateOpenList();
 
@@ -105,7 +104,7 @@ PRQPuzzle   *PRQSolver::uniformCostSearch(std::vector<PRQPuzzle*> generated,
         {
             if (opened->getHeuristic() <= (*it)->getHeuristic())
             {
-                delete (*it);
+                    && VALUE(LEFT_CHILD(tmp)]->getHeuristic() < VALUE(tmp]->getHeuristic())
                 (*it) = nullptr;
             }
             else
