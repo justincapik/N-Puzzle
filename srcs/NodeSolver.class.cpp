@@ -5,6 +5,11 @@
 #include "NodeSolver.class.hpp"
 #include "Node.class.hpp"
 
+unsigned long long factorial(long long n)
+{
+  return (n == 1 || n == 0) ? 1 : factorial(n - 1) * n;
+}
+
 NodeSolver::NodeSolver(int **original, const int size):
     _size(size)
 {
@@ -15,10 +20,16 @@ NodeSolver::NodeSolver(int **original, const int size):
     this->_solutionNode = nullptr;
     this->_totalsize = size * size;
     
-    current->heuristic = -1;
+    current->heuristic = -1.;
     current->depth = -1;
     current->prev = nullptr;
     current->needToCheck = true;
+
+    this->totalOpenedEver = 0;
+    this->totalNodes = 0;
+    this->totalStatesEver = 0;
+    this->currentClosed = 0;
+    this->nonValideCopies = 0;
 
     this->_base->addPuzzleToTree(original, 0, 0, 0);
     this->addSolution();
@@ -46,13 +57,14 @@ NodeSolver::~NodeSolver()
 Node        *NodeSolver::getBestPuzzle(void)
 {
     Node    *tmp = this->_base;
-    int     bestidx, bestval;
+    int     bestidx;
+    double  bestval;
 
     //std::cout << "looking for best puzzle" << std::endl;
     for (int i = 0; i < this->_totalsize; ++i)
     {
         bestidx = -1;
-        bestval = INT_MAX;
+        bestval = __DBL_MAX__;
         for (int j = 0; j < this->_totalsize; ++j)
         {
             /*
@@ -148,10 +160,54 @@ bool        NodeSolver::genNextPuzzle(int **puzzle)
 void        NodeSolver::calculateHeuristic(int **puzzle, double *heuristic,
     int depth, std::string heuristicType)
 {
-    *heuristic = static_cast<double>(depth);
-    (void)puzzle;
-    (void)heuristicType;
-} //TODO:
+    int **tmp = puzzle;
+    int **sol = this->_solutionTab;
+
+    if (heuristicType.compare("BFS") == 0)
+        *heuristic = depth;
+    else if (heuristicType.compare("ATO") == 0) //A* Tiles-out
+    {
+        int score = 0;
+        for (int y = 0; y < this->_size; ++y)
+            for (int x = 0; x < this->_size; ++x)
+                if (tmp[y][x] != sol[y][x])
+                    ++score;
+        *heuristic = depth + score;
+    }
+    else if (heuristicType.compare("AMD") == 0) //A* Manhattan Distance
+    {
+        double score = 0;
+        for (int y = 0; y < this->_size; ++y)
+        {
+            for (int x = 0; x < this->_size; ++x)
+            {
+                if (tmp[y][x] != 0)
+                {
+                    int tmpy, tmpx;
+                    this->findNumberinPuzzle(tmp[y][x], &tmpx, &tmpy, sol);
+                    score += abs(tmpy - y) + abs(tmpx - x);
+                }
+            }
+        }
+        *heuristic = depth + score;
+    }
+    else if (heuristicType.compare("AED") == 0) //A* Euclidian Distance
+    {
+        double score = 0;
+        for (int y = 0; y < this->_size; ++y)
+        {
+            for (int x = 0; x < this->_size; ++x)
+            {
+                int tmpy, tmpx;
+                this->findNumberinPuzzle(tmp[y][x], &tmpx, &tmpy, sol);
+                score += std::sqrt((tmpy - y) * (tmpy - y) + (tmpx - x) * (tmpx - x));
+            }
+        }
+        *heuristic = depth + score;
+    }
+    else
+        throw std::runtime_error(std::string("Invalide heuristic name"));
+}
 
 void        rec(Node *node, std::string *toPrint, int size, int level)
 {
@@ -162,7 +218,8 @@ void        rec(Node *node, std::string *toPrint, int size, int level)
         if (node->tab[i] != nullptr)
         {
             toPrint[level] += " ";
-            toPrint[level] += std::to_string(static_cast<int>(node->tab[i]->heuristic));
+            toPrint[level] += std::to_string(/*static_cast<int>*/(node->tab[i]->heuristic));
+            toPrint[level] += "(" + std::to_string(node->tab[i]->needToCheck) + ")";
             rec(node->tab[i], toPrint, size, level + 1);
             if (level == size - 1)
             {
@@ -171,7 +228,7 @@ void        rec(Node *node, std::string *toPrint, int size, int level)
                 toPrint[level + 1] += " ";
                 toPrint[level + 1] += std::to_string(node->tab[i]->needToCheck);
                 toPrint[level + 2] += " ";
-                toPrint[level + 2] += std::to_string(static_cast<int>(node->tab[i]->heuristic));
+                toPrint[level + 2] += std::to_string(/*static_cast<int>*/(node->tab[i]->heuristic));
             }
         }
     }
@@ -240,21 +297,27 @@ Node        *NodeSolver::solve(std::string heuristicType, std::string searchType
     int     **puzzle;
     int     treeDepth;
     double  heuristic;
-    int     depth = 0;
+
+    double  oldHeuristic = -1;
+
 
     puzzle = new int*[this->_size];
     for (int i = 0; i < this->_size; ++i)
         puzzle[i] = new int[this->_size];
 
     std::cout << std::endl;
-    while(1)
+    while (1)
     {
+        //showTree(this->_base, this->_size * this->_size);
 
         Node    *best = this->getBestPuzzle();
+        //std::cout << "best node heuristic = " << best->heuristic << std::endl;
+        //if (oldHeuristic > best->heuristic)
+        //    throw std::runtime_error("Heuristic order wrongly chosen");
+        oldHeuristic = best->heuristic;
         best->closeNode();
         ++this->currentClosed;
         this->convertNodeToTable(best, puzzle);
-        //showTree(this->_base, this->_size * this->_size);
         /*
         for (int i = 0; i < this->_size; ++i)
         {
@@ -264,6 +327,20 @@ Node        *NodeSolver::solve(std::string heuristicType, std::string searchType
         }
         std::cout << "best = " << static_cast<void*>(best) << std::endl;
         */
+        if (this->totalStatesEver % 100000 == 0)
+        {
+            std::cout << "total opened => " << this->totalOpenedEver << std::endl;
+            std::cout << "total states => " << this->totalStatesEver << std::endl;
+            std::cout << "total invalide copies => " << this->nonValideCopies << std::endl;
+            std::cout << "current closed => " << this->currentClosed << std::endl;
+            std::cout << "current opened => " << this->totalOpenedEver - this->currentClosed << std::endl;
+            std::cout << "total nodes => " << this->totalNodes << std::endl;
+            std::cout << "ratio nodes/states => " << static_cast<double>(this->totalNodes) / this->totalStatesEver << std::endl;
+            std::cout << "depth => " << best->depth + 1 << std::endl;
+            std::cout << "percentage of possible states checked => "
+                << (this->totalStatesEver * 100.)/ (factorial(this->_totalsize) / 2) << std::endl;
+            std::cout << std::endl;
+        }
         for (int k = 0; k < 4; ++k)
         {
             if (genNextPuzzle(puzzle) == false)
@@ -281,8 +358,15 @@ Node        *NodeSolver::solve(std::string heuristicType, std::string searchType
                 }
                 */
                 std::cout << "total opened => " << this->totalOpenedEver << std::endl;
-                std::cout << "current closed => " << this->currentClosed << std::endl;
                 std::cout << "total states => " << this->totalStatesEver << std::endl;
+                std::cout << "total invalide copies => " << this->nonValideCopies << std::endl;
+                std::cout << "current closed => " << this->currentClosed << std::endl;
+                std::cout << "current opened => " << this->totalOpenedEver - this->currentClosed << std::endl;
+                std::cout << "total nodes => " << this->totalNodes << std::endl;
+                std::cout << "ratio nodes/states => " << static_cast<double>(this->totalNodes) / this->totalStatesEver << std::endl;
+                std::cout << "depth => " << best->depth + 1 << std::endl;
+                std::cout << "percentage of possible states checked => "
+                    << (this->totalStatesEver * 100.)/ (factorial(this->_totalsize) / 2) << std::endl;
                 Node *tmp = this->_base->throwSearch(puzzle, &treeDepth)->addPuzzleToTree(puzzle, treeDepth, 0, 0);
                 tmp->lastInSequence = best;
                 for (int i = 0; i < this->_size; ++i)
@@ -291,11 +375,12 @@ Node        *NodeSolver::solve(std::string heuristicType, std::string searchType
                 return tmp;
             }
             Node *current = this->_base->throwSearch(puzzle, &treeDepth);
-            this->calculateHeuristic(puzzle, &heuristic, depth + 1, heuristicType);
+            this->calculateHeuristic(puzzle, &heuristic, best->depth + 1, heuristicType);
             if (treeDepth < this->_totalsize)
             {
-                Node* tmp = current->addPuzzleToTree(puzzle, treeDepth, depth + 1, heuristic);
+                Node* tmp = current->addPuzzleToTree(puzzle, treeDepth, best->depth + 1, heuristic);
                 tmp->lastInSequence = best;
+                this->totalNodes += this->_totalsize - treeDepth - 1;
                 ++this->totalOpenedEver;
                 ++this->totalStatesEver;
                 /*
@@ -312,7 +397,7 @@ Node        *NodeSolver::solve(std::string heuristicType, std::string searchType
             }
             else if (current->heuristic > heuristic)
             {
-                current->updateBranchToTop(heuristic, depth);
+                current->updateBranchToTop(heuristic, best->depth + 1);
                 current->lastInSequence = best;
                 ++this->totalOpenedEver;
                 --this->currentClosed;
@@ -328,19 +413,18 @@ Node        *NodeSolver::solve(std::string heuristicType, std::string searchType
                 std::cout << ", best = " << static_cast<void*>(best) << std::endl;
                 */
             }
-            /*
             else
             {
-                std::cout << "copy found but didn't add to tree because heuristic was too big" << std::endl;
+                ++this->nonValideCopies;
             }
             
+            /*
             std::cout << "treeDepth = " << treeDepth << std::endl;
             std::cout << std::endl;
             */
         }
         //showTree(this->_base, this->_size * this->_size);
         //std::cout << "end of loop" << std::endl << std::endl;
-        ++depth;
     
     }    
     
@@ -348,7 +432,6 @@ Node        *NodeSolver::solve(std::string heuristicType, std::string searchType
         delete[] puzzle[i];
     delete[] puzzle;
     
-    (void)heuristicType;
     (void)searchType;
     std::cout << "wtf dude" << std::endl;
     return nullptr;

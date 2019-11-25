@@ -7,8 +7,9 @@
 using namespace std;
 
 //#include "Puzzle.class.hpp"
-#include "NodeSolver.class.hpp"
 #include "Visual.class.hpp"
+#include "PRQSolver.class.hpp"
+#include "PRQPuzzle.class.hpp"
 
 int size = 0;
 
@@ -132,8 +133,34 @@ int     main(int ac, char **av)
     list<int**> soluce;
     Visual visu(::size, VisualMode);
 
+    firstTab[2][0] = 8;
+    firstTab[2][1] = 1;
+    firstTab[2][2] = 4;
+    */
+
     NodeSolver solver(firstTab, ::size);
-    Node *solution = solver.solve("", "");
+    Node *solution = solver.solve("AED", "");
+    std::cout << sizeof(Node) << std::endl;
+    */
+
+    PRQSolver solver(firstTab, ::size);
+    
+    PRQPuzzle *solution = solver.solve("AED", "UCS");
+    (void)solution;
+    /*
+    while(solution != nullptr)
+    {
+        solution->printPuzzle();
+        std::cout<< std::endl;
+        solution = solution->prevInSolution;
+    }
+    */
+    //std::cout << test->getHash() << std::endl;
+    //PRQPuzzle test2(*test);
+    //std::cout << test2.getHash() << std::endl;
+
+
+    /*
     int **tab = new int*[::size];
     for (int i = 0; i < ::size; ++i)
         tab[i] = new int[::size];

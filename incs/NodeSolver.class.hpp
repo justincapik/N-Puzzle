@@ -25,6 +25,8 @@ class NodeSolver
         long long   totalOpenedEver;
         long long   totalStatesEver;
         long long   currentClosed;
+        long long   totalNodes;
+        long long   nonValideCopies;
 
     public:
         NodeSolver(int **original, int size);

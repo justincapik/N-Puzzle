@@ -112,7 +112,7 @@ void        Node::closeNode(void)
         
         bool    checkIfOpened = false;
         int     bestidx = -1;
-        int     bestval = INT_MAX;
+        double  bestval = __DBL_MAX__;
         for (int j = 0; j < this->size * this->size; ++j)
         {
             if (prev->tab[j] != nullptr)
