@@ -2,6 +2,7 @@ NAME = N-Puzzle
 
 SRC		=	PRQPuzzle.class.cpp\
 			PRQSolver.class.cpp\
+			Visual.class.cpp\
 			main.cpp
 
 SRCDIR = srcs
@@ -16,7 +17,7 @@ LIB = -lncurses
 all: $(NAME)
 
 $(NAME): $(SRC_E)
-	$(CC) -I$(INCPATH) -c $(FLAGS) $(SRC_E)
+	$(CC) -I $(INCPATH) -c $(FLAGS) $(SRC_E)
 	$(CC) -o $(NAME) $(OBJ) $(LIB)
 
 clean:

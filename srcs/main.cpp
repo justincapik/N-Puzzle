@@ -3,19 +3,30 @@
 #include <fstream>
 #include <stdexcept>
 #include <sstream>
+#include <list>
 using namespace std;
 
 //#include "Puzzle.class.hpp"
-#include "PRQPuzzle.class.hpp"
+#include "Visual.class.hpp"
 #include "PRQSolver.class.hpp"
-//#include "LCSolver.class.hpp"
-//#include "LCPuzzle.class.hpp"
+#include "PRQPuzzle.class.hpp"
 
 int size = 0;
+
+bool    clearTab(int **toClear) {
+    if (toClear) {
+        for (int i = 0; i < ::size; ++i)
+            if (toClear[i])
+                delete[] toClear[i];
+        delete[] toClear;
+    }
+    return true;
+}
 
 int **parsing(string fileName) {
     ifstream file;
     string line;
+    stringstream ss;
     int **ret = NULL;
 
     int y = -1;
@@ -27,7 +38,8 @@ int **parsing(string fileName) {
     while (getline(file, line)) {
         if (line[0] == '#')
             continue;
-        stringstream ss;
+        ss.str("");
+        ss.clear();
         ss << line;
         while (!ss.eof()) {
             unsigned int n;
@@ -36,23 +48,25 @@ int **parsing(string fileName) {
                 ss.clear();
                 if (line[ss.tellg()] == '#')
                     break;
-                else
+                else if (clearTab(ret))
                     throw runtime_error("Invalid file format");
             }
             if (::size == 0) {
                 ::size = n;
                 x = ::size;
                 ret = new int*[n];
+                for (int i = 0; i < (int)n; i++)
+                    ret[i] = new int[n];
             }
             else if (ss.good() || ss.eof()) {
-                if (x == 0)
-                    ret[y] = new int[::size];
-                if (n + 1 > static_cast<unsigned int>(::size * ::size))
+                if (x >= ::size)
+                    break;
+                if (n + 1 > static_cast<unsigned int>(::size * ::size) && clearTab(ret))
                     throw runtime_error("Invalid file format");
                 ret[y][x++] = n;
             }
         }
-        if (x != ::size || ::size > 5 || ::size < 3)
+        if ((x != ::size || ::size > 5 || ::size < 3) && clearTab(ret))
             throw runtime_error("Invalid file format");
         x = 0;
         y++;
@@ -65,6 +79,8 @@ int     main(int ac, char **av)
 {
     string algo = "AStarSearch";
     string heuristic = "ManhattanDistance";
+    string VisualMode = "";
+
     int **firstTab = NULL;
 
     try {
@@ -79,27 +95,33 @@ int     main(int ac, char **av)
                     case 'u':
                         algo = "UniformCost";
                         break;
+                    case 'v':
+                        VisualMode = "text";
+                        break;
+                    case 'w':
+                        VisualMode = "web";
+                        break;
                     default:
                         throw runtime_error("invalid option: " + static_cast<string>(av[n]));
                 }
             }
-            else if (!firstTab) {
+            else if (!firstTab)
                 firstTab = parsing(av[n]);
-                cout << ::size << endl;
-            }
         }
     }
     catch (exception& e) {
+        if (firstTab)
+            clearTab(firstTab);
         if (static_cast<string>(e.what()).compare("usage"))
             cout << e.what() << endl << endl;
         cout << "Usage: N-Puzzle [-g] [-u] FileName" << endl
         << "   -g   Use greedy search (default : A*)" << endl
-        << "   -u   Use uniform-cost search" << endl;
+        << "   -u   Use uniform-cost search" << endl
+        << "   -v   Use visualisator mode" << endl;
         return 0;
     }
     /*
     Puzzle *ogPuzzle = new Puzzle(firstTab, ::size);
-    ogPuzzle->printPuzzle();
     std::cout << std::endl;
 
     OldSolver solver(ogPuzzle, ::size);
@@ -107,25 +129,15 @@ int     main(int ac, char **av)
     solution->printPuzzle();
     std::cout << (std::to_string(solution->getDepth())) << std::endl;
     */
-    /*
-    int **firstTab = new int*[3];
-    for (int i = 0; i < 3; ++i)
-        firstTab[i] = new int[3];
-    
-    firstTab[0][0] = 2;
-    firstTab[0][1] = 6;
-    firstTab[0][2] = 0;
 
-    firstTab[1][0] = 5;
-    firstTab[1][1] = 3;
-    firstTab[1][2] = 7;
+    list<int**> soluce;
+    Visual visu(::size, VisualMode);
 
     firstTab[2][0] = 8;
     firstTab[2][1] = 1;
     firstTab[2][2] = 4;
     */
 
-    /*
     NodeSolver solver(firstTab, ::size);
     Node *solution = solver.solve("AED", "");
     std::cout << sizeof(Node) << std::endl;
@@ -153,9 +165,13 @@ int     main(int ac, char **av)
     for (int i = 0; i < ::size; ++i)
         tab[i] = new int[::size];
     int k = 0;
+
     while (solution != NULL)
     {
         //std::cout << "addr = " << static_cast<void*>(solution) << std::endl;
+        int **tab = new int*[::size];
+        for (int i = 0; i < ::size; ++i)
+            tab[i] = new int[::size];
         solver.convertNodeToTable(solution, tab);
         for (int i = 0; i < ::size; ++i)
         {
@@ -163,17 +179,29 @@ int     main(int ac, char **av)
                 std::cout << tab[i][j] << " ";
             std::cout << std::endl;
         }
+        if (VisualMode != "")
+            soluce.push_front(tab);
         std::cout << std::endl;
         solution = solution->lastInSequence;
         ++k;
     }
-    */
+    if (VisualMode != "") {
+        if (VisualMode == "web")
+            visu.GenerateWeb(soluce);
+        else if (VisualMode == "text")
+            visu.print(soluce);
+
+    	for (list<int**>::iterator it = soluce.begin(); it != soluce.end(); it++) {
+    		for (int n = 0; n < ::size; n++)
+                delete (*it)[n];
+            delete (*it);
+    	}
+    }
     //std::cout << "addr = " << static_cast<void*>(solution) << std::endl;
-    /*
-    for (int i = 0; i < ::size; ++i)
-        delete[] firstTab[i];
-    delete[] firstTab;
-    */
+
+
+
+
     (void)ac;
     (void)av;
     return (0);

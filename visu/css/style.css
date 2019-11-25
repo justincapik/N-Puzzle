@@ -1,0 +1,142 @@
+.footer { padding: 1rem 1.5rem 1rem !important; }
+.margin-15 { margin: 15px; }
+.mar-0 { margin: 0 !important; }
+.pagination-list li { list-style:none; }
+.bot-20 { padding-bottom: 20px; }
+.pad-0 { padding: 0px !important; }
+.pad-15 { padding: 15px; }
+.pad-5 { padding: 5px; }
+.top-15 { margin-top: 5px; }
+.mar-l { margin-left: 5px; }
+.mar-7 { margin: 0px 7px; }
+.height-120px { max-height: 150px !important; width: auto !important;}
+.height-100 { height: 100%; }
+.width-100 { width: 100%; }
+.width-75 { width: 75%; }
+.width-auto { width: auto; }
+.width-200 { min-width: 200px; }
+.height-auto { height: auto; }
+.overflow { overflow: auto;}
+.absolute { position: absolute;}
+.relative { position: relative;}
+.not-here { display: none !important; }
+.mar-bot { margin-bottom: 1.5rem; }
+
+.centered-btn {
+  padding: 15px;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+}
+
+.lastPic {
+  min-height: 185px;
+}
+
+.lastPicContent {
+  min-height: 185px;
+  height: 80%;
+  position: absolute;
+  overflow: auto;
+}
+
+.lastPicContent  div {
+  padding-right: 10px;
+  max-height: 175px;
+}
+
+.studioContent {
+  overflow:hidden;
+  position:relative;
+}
+
+.slider {
+  margin: 23px 25px;
+  -webkit-appearance: none;
+  height: 7px !important;
+  border-radius: 5px;
+  background: #d3d3d3;
+  outline: none;
+  opacity: 0.7;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: #00d1b2;
+  cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: #00d1b2;
+  cursor: pointer;
+}
+
+.mar-15 {
+  margin-left: 15px;
+  margin-right: 15px;
+  padding-top: 15px;
+  padding-bottom: 15px;
+}
+
+.margin-auto {
+	margin: auto;
+	margin-top: 30px;
+	margin-bottom: 30px;
+}
+
+
+.mar-lr-15 {
+  margin-left: 15px;
+  margin-right: 15px;
+}
+
+.vertical-align {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.is-current {
+  background-color: #7a7a7a !important;
+  border-color: #6e6e6e !important;
+  color: #fff !important;
+}
+
+.is-invisible { position: absolute !important; }
+
+#collapse, #collapsible {
+  top: -6px;
+  position: relative;
+}
+
+#collapsible {
+  background-color: #777;
+  color: white;
+  cursor: pointer;
+  padding: 18px;
+  width: 100%;
+  border: none;
+  text-align: left;
+  outline: none;
+  font-size: 15px;
+}
+
+.active, .collapsible:hover { background-color: #555; }
+
+.collapse {
+  padding: 0 18px;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.2s ease-out;
+  background-color: #f1f1f1;
+}

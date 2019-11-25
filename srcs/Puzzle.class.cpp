@@ -24,7 +24,7 @@ Puzzle::Puzzle(Puzzle const & instance):
 {
     this->_heuristic = instance.getHeuristic();
     this->_depth = instance.getDepth();
-    
+
     this->_puzzle = new int*[this->_size];
     for (int i = 0; i < this->_size; i++)
     {
