@@ -145,15 +145,12 @@ int     main(int ac, char **av)
     PRQSolver solver(firstTab, ::size);
     
     PRQPuzzle *solution = solver.solve("AED", "UCS");
-    (void)solution;
-    /*
     while(solution != nullptr)
     {
         solution->printPuzzle();
         std::cout<< std::endl;
         solution = solution->prevInSolution;
     }
-    */
     //std::cout << test->getHash() << std::endl;
     //PRQPuzzle test2(*test);
     //std::cout << test2.getHash() << std::endl;

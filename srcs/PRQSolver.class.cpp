@@ -34,8 +34,8 @@ PRQPuzzle    *PRQSolver::solve(std::string heuristicType, std::string searchType
 
     if (this->_openList.getTop()->compare(*(this->_solutionPuzzle)))
         return this->_openList.getTop();
-    //while (this->_openList.getTop() != nullptr)
-    for (int i = 0; i < 50 && this->_openList.getTop() != nullptr; ++i)
+    while (this->_openList.getTop() != nullptr)
+    //for (int i = 0; i < 50 && this->_openList.getTop() != nullptr; ++i)
     {
         best = this->getNextAndUpdateOpenList();
 
@@ -218,10 +218,15 @@ bool    PRQSolver::checkIfInClosedList(PRQPuzzle *generated, PRQPuzzle **closed)
 {
     std::cout << "check closed list" << std::endl;
     if ((*closed = this->_closedList.isInTree(generated)) == nullptr)
+    {
+        std::cout << "check closed list end" << std::endl;
         return false;
+    }
     else
+    {
+        std::cout << "check closed list end" << std::endl;
         return true;
-    std::cout << "check closed list end" << std::endl;
+    }
 }
 
 //DO NOT USED (inefficient)

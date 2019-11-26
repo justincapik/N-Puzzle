@@ -6,12 +6,12 @@
 PRQPuzzle::PRQPuzzle(int **puzzle, int size, double heuristic, int depth):
 _puzzle(puzzle), _size(size), _heuristic(heuristic), _depth(depth)
 {
-    std::cout << "puzzle create";
+    //std::cout << "puzzle create";
     this->prevInSolution = nullptr;
 
     this->_hash = 0;
     this->_hash = this->hashPuzzle(puzzle);
-    std::cout << " with hash = " << this->_hash << " and adress = " << this << std::endl;
+    //std::cout << " with hash = " << this->_hash << " and adress = " << this << std::endl;
 }
 
 PRQPuzzle::PRQPuzzle(PRQPuzzle const & instance): _size(instance.getSize()), _heuristic(instance.getHeuristic()),
@@ -35,7 +35,7 @@ PRQPuzzle::PRQPuzzle(PRQPuzzle const & instance): _size(instance.getSize()), _he
 
 PRQPuzzle::~PRQPuzzle(void)
 {
-    std::cout << "puzzle delete with hash = " << this->_hash << " and adress = " << this << std::endl;
+    //std::cout << "puzzle delete with hash = " << this->_hash << " and adress = " << this << std::endl;
     for (int i = 0; i < this->_size; ++i)
     {
         delete[] this->_puzzle[i];

@@ -4,7 +4,7 @@
 # include <cmath>
 # include "PRQPuzzle.class.hpp"
 
-# define PQ_DATA_SIZE 100000
+# define PQ_DATA_SIZE 500000
 # define PARENT(x) static_cast<int>(std::floor(x/2))
 # define RIGHT_CHILD(x) (2 * x + 1)
 # define LEFT_CHILD(x) (2 * x)

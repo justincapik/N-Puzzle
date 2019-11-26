@@ -19,7 +19,7 @@ void BinaryTree<T>::freeNodes(_node* _node) {
 	freeNodes(_node->left);
 	freeNodes(_node->right);
 
-	cout << "[closed] " << endl;
+	//cout << "[closed] " << endl;
 	delete _node->data;
 	delete _node;
 }
@@ -31,30 +31,30 @@ void BinaryTree<T>::add(T var) {
 	newNode->left = NULL;
 	newNode->right = NULL;
 
-	cout << "new _node with data = " << var->getHash() << " and adress = " << var << endl;
+	//cout << "new _node with data = " << var->getHash() << " and adress = " << var << endl;
 	if (!this->_root) {
-		cout << "root don't exist " << endl;
+		//cout << "root don't exist " << endl;
 		this->_root = newNode;
 	}
 	else {
 		_node* parent = NULL;
-		cout << "1" << endl;
+		//cout << "1" << endl;
 		_node *tree = this->_root;
 		while (tree) {
-			cout << "check : " << tree->data->getHash() << endl;
+			//cout << "check : " << tree->data->getHash() << endl;
 			parent = tree;
 			if (var->getHash() > tree->data->getHash())
 				tree = tree->left;
 			else
 				tree = tree->right;
-			if (tree)
-				cout << "go to : " << tree->data->getHash() << endl;
+			//if (tree)
+			//	cout << "go to : " << tree->data->getHash() << endl;
 		}
 		if (var->getHash() > parent->data->getHash())
 			parent->left = newNode;
 		else
 			parent->right = newNode;
-		cout << "Placed" << endl;
+		//cout << "Placed" << endl;
 	}
 }
 
@@ -115,7 +115,7 @@ void BinaryTree<T>::remove(T var) {
 	delete tree;
 
 	if (tmp->left) {
-		cout << "3" << endl;
+		//cout << "3" << endl;
 		tree = tmp->left;
 
 		if (tmp->right)
