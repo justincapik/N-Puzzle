@@ -5,7 +5,7 @@
 
 // TODO: list
 // change generatePuzzleFromPosition to send std::vector
-// 
+//
 
 LCSolver::LCSolver(int **original, int size):
     _size(size)
@@ -224,27 +224,23 @@ LCPuzzle  *LCSolver::genSolution(void)
     {
         solutionTab[i] = new int[this->_size];
         for(int j = 0; j < this->_size; ++j)
-            solutionTab[i][j] = -1;
+            solutionTab[i][j] = 0;
     }
-    
-    int i = 1, x = 0, y = 0;
-    while (1)
-    {
-        solutionTab[y][x] = i++;
-        if (x + 1 < this->_size && solutionTab[y][x + 1] == -1)
-            ++x;
-        else if (y + 1 < this->_size && solutionTab[y + 1][x] == -1)
-            ++y;
-        else if (x - 1 >= 0 && solutionTab[y][x - 1] == -1)
-            --x;
-        else if (y - 1 >= 0 && solutionTab[y - 1][x] == -1)
-            --y;
-        else
-        {
-            solutionTab[y][x] = 0;
-            break;
+
+    int i = 1;
+    int dirX = 1, dirY = 0, dir = 0;
+    int x = 0, y = 0;
+    solutionTab[y][x] = i++;
+    while (i < _size * _size) {
+        while (y + dirY < _size && y + dirY >= 0 && x + dirX < _size && x + dirX >= 0
+        && solutionTab[y + dirY][x + dirX] == 0) {
+            y += dirY;
+            x += dirX;
+            solutionTab[y][x] = i++;
         }
-        
+        dir = (dir == 3) ? 0 : dir + 1;
+        dirX = (dir == 0) ? 1 : ((dir == 2) ? -1 : 0);
+        dirY = (dir == 1) ? 1 : ((dir == 3) ? -1 : 0);
     }
     this->_solution = solutionTab;
     LCPuzzle *solution = new LCPuzzle(solutionTab, this->_size);
@@ -277,7 +273,7 @@ bool    LCSolver::checkIfInOpenList(LCPuzzle *generated, LCPuzzle **opened,
 {
     LCPuzzle   *tmp = this->_openList;
     LCPuzzle   *prev;
-    
+
     while (tmp != nullptr)
     {
         if (tmp->compare(*generated))
@@ -295,7 +291,7 @@ void    LCSolver::addToOpenList(LCPuzzle *puzzle)
 {
     LCPuzzle   *tmp = this->_openList;
     LCPuzzle   *prev = nullptr;
-    
+
     if (puzzle == nullptr || puzzle->getHeuristic() == -1)
         throw std::runtime_error("Tried to add an invalide pointer to open list");
     ++this->totalOpenStates;
