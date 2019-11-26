@@ -12,7 +12,7 @@ class BinaryTree
 	private:
 		struct _node
 		{
-			T *data;
+			T data;
 			struct _node *left;
 			struct _node *right;
 		};

@@ -94,7 +94,7 @@ PRQPuzzle   *PRQSolver::uniformCostSearch(std::vector<PRQPuzzle*> generated,
                 this->addToOpenList((*it));
                 (*it)->prevInSolution = best;
             }
-        
+
         }
         else
         {
@@ -188,7 +188,7 @@ PRQPuzzle  *PRQSolver::genSolution(void)
         for(int j = 0; j < this->_size; ++j)
             solutionTab[i][j] = -1;
     }
-    
+
     int i = 1, x = 0, y = 0;
     while (1)
     {
@@ -206,7 +206,7 @@ PRQPuzzle  *PRQSolver::genSolution(void)
             solutionTab[y][x] = 0;
             break;
         }
-        
+
     }
     this->_solution = solutionTab;
     PRQPuzzle *solution = new PRQPuzzle(solutionTab, this->_size);

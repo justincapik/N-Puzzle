@@ -6,10 +6,12 @@
 PRQPuzzle::PRQPuzzle(int **puzzle, int size, double heuristic, int depth):
 _puzzle(puzzle), _size(size), _heuristic(heuristic), _depth(depth)
 {
+    std::cout << "puzzle create";
     this->prevInSolution = nullptr;
 
     this->_hash = 0;
     this->_hash = this->hashPuzzle(puzzle);
+    std::cout << " with hash = " << this->_hash << " and adress = " << this << std::endl;
 }
 
 PRQPuzzle::PRQPuzzle(PRQPuzzle const & instance): _size(instance.getSize()), _heuristic(instance.getHeuristic()),
@@ -18,7 +20,7 @@ PRQPuzzle::PRQPuzzle(PRQPuzzle const & instance): _size(instance.getSize()), _he
     this->_heuristic = instance.getHeuristic();
     this->_depth = instance.getDepth();
     this->_hash = instance.getHash();
-    
+
     this->_puzzle = new int*[this->_size];
     for (int i = 0; i < this->_size; i++)
         this->_puzzle[i] = new int[this->_size];
@@ -33,6 +35,7 @@ PRQPuzzle::PRQPuzzle(PRQPuzzle const & instance): _size(instance.getSize()), _he
 
 PRQPuzzle::~PRQPuzzle(void)
 {
+    std::cout << "puzzle delete with hash = " << this->_hash << " and adress = " << this << std::endl;
     for (int i = 0; i < this->_size; ++i)
     {
         delete[] this->_puzzle[i];
@@ -156,7 +159,7 @@ size_t  PRQPuzzle::hashPuzzle(int **puzzle)
 {
     std::hash<std::string> hasher;
     std::string str = "";
-    
+
     for (int i = 0; i < this->_size; ++i)
         for (int j = 0; j < this->_size; ++j)
             str += std::to_string(puzzle[i][j]);
