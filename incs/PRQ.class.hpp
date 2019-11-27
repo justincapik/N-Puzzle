@@ -4,7 +4,7 @@
 # include <cmath>
 # include "PRQPuzzle.class.hpp"
 
-# define PQ_DATA_SIZE 500000
+# define PQ_DATA_SIZE 20000000
 # define PARENT(x) static_cast<int>(std::floor(x/2))
 # define RIGHT_CHILD(x) (2 * x + 1)
 # define LEFT_CHILD(x) (2 * x)
@@ -14,19 +14,20 @@ template <class T>
 class PriorityQueue
 {
     private:
-        T           _data[PQ_DATA_SIZE];
+        T           *_data;
         long long   _cursor;
 
     public:
         PriorityQueue()
         {
-            //bzero(static_cast<void*>(this->_data), sizeof(T) * PQ_DATA_SIZE);
+            this->_data = new T[PQ_DATA_SIZE];
             this->_cursor = 1;
         }
         ~PriorityQueue()
         {
             for (int i = 1; i < this->_cursor && i < PQ_DATA_SIZE; ++i)
                 delete this->_data[i];
+            delete[] this->_data;
         }
 
         void    add(T var)
@@ -42,6 +43,8 @@ class PriorityQueue
                 tmp = PARENT(tmp);
             }
             ++this->_cursor;
+            //if (this->_cursor % 100000 == 0)
+            //    std::cout << "cursor = " << this->_cursor << std::endl;
             if (this->_cursor >= PQ_DATA_SIZE)
                 throw std::runtime_error("Priority queue not big enough, increase PQ_DATA_SIZE");
         }

@@ -31,7 +31,7 @@ void BinaryTree<T>::add(T var) {
 	newNode->left = NULL;
 	newNode->right = NULL;
 
-	cout << "new _node with data = " << var->getHash() << " and adress = " << var << endl;
+	//cout << "new _node with data = " << var->getHash() << " and adress = " << var << endl;
 	if (!this->_root) {
 		this->_root = newNode;
 	}
@@ -50,7 +50,7 @@ void BinaryTree<T>::add(T var) {
 			parent->left = newNode;
 		else
 			parent->right = newNode;
-		cout << "Placed" << endl;
+		//cout << "Placed" << endl;
 	}
 }
 
@@ -70,7 +70,7 @@ void BinaryTree<T>::replace(_node *replaced) {
 template <class T>
 T	BinaryTree<T>::isInTree(T var) {
 	if (this->_root == NULL) {
-		cout << "not in tree, root doesn't exist." << endl;
+		//cout << "not in tree, root doesn't exist." << endl;
 		return nullptr;
 	}
 	else {
@@ -84,13 +84,13 @@ T	BinaryTree<T>::isInTree(T var) {
 				tree = tree->right;
 		}
 	}
-	cout << "not in tree." << endl;
+	//cout << "not in tree." << endl;
 	return nullptr;
 }
 
 template <class T>
 void BinaryTree<T>::remove(T var) {
-	cout << "REMOVED" << endl;
+	//cout << "REMOVED" << endl;
 	_node *tree = this->_root;
 	_node *parent;
 	while (tree && var->getHash() != tree->data->getHash()) {
@@ -124,8 +124,7 @@ void BinaryTree<T>::remove(T var) {
 		this->replace(tree->left);
 	}
 
-	cout << "removed : " << tree << endl;
-
+	//cout << "removed : " << tree << endl;
 
 	delete tree->data;
 	delete tree;

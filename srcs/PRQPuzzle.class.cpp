@@ -3,9 +3,12 @@
 
 #include "PRQPuzzle.class.hpp"
 
+int PRQPuzzle::size = -1;
+
 PRQPuzzle::PRQPuzzle(int **puzzle, int size, double heuristic, int depth):
-_puzzle(puzzle), _size(size), _heuristic(heuristic), _depth(depth)
+_puzzle(puzzle), _heuristic(heuristic), _depth(depth)
 {
+    PRQPuzzle::size = size;
     //std::cout << "puzzle create";
     this->prevInSolution = nullptr;
 
@@ -14,20 +17,21 @@ _puzzle(puzzle), _size(size), _heuristic(heuristic), _depth(depth)
     //std::cout << " with hash = " << this->_hash << " and adress = " << this << std::endl;
 }
 
-PRQPuzzle::PRQPuzzle(PRQPuzzle const & instance): _size(instance.getSize()), _heuristic(instance.getHeuristic()),
-    _depth(instance.getDepth()), _hash(instance.getHash())
+PRQPuzzle::PRQPuzzle(PRQPuzzle const & instance):  _hash(instance.getHash()),
+    _heuristic(instance.getHeuristic()), _depth(instance.getDepth())
 {
+    const int size = instance.getSize();
     this->_heuristic = instance.getHeuristic();
     this->_depth = instance.getDepth();
     this->_hash = instance.getHash();
 
-    this->_puzzle = new int*[this->_size];
-    for (int i = 0; i < this->_size; i++)
-        this->_puzzle[i] = new int[this->_size];
+    this->_puzzle = new int*[size];
+    for (int i = 0; i < size; i++)
+        this->_puzzle[i] = new int[size];
     int **tmp = instance.getPuzzle();
-    for (int y = 0; y < this->_size; ++y)
+    for (int y = 0; y < size; ++y)
     {
-        for (int x = 0; x < this->_size; ++x)
+        for (int x = 0; x < size; ++x)
             this->_puzzle[y][x] = tmp[y][x];
     }
     this->prevInSolution = nullptr;
@@ -36,7 +40,7 @@ PRQPuzzle::PRQPuzzle(PRQPuzzle const & instance): _size(instance.getSize()), _he
 PRQPuzzle::~PRQPuzzle(void)
 {
     //std::cout << "puzzle delete with hash = " << this->_hash << " and adress = " << this << std::endl;
-    for (int i = 0; i < this->_size; ++i)
+    for (int i = 0; i < PRQPuzzle::size; ++i)
     {
         delete[] this->_puzzle[i];
         this->_puzzle[i] = nullptr;
@@ -49,16 +53,16 @@ bool        PRQPuzzle::compare(PRQPuzzle rhs) const
 {
     int     **tmp = rhs.getPuzzle();
 
-    if (rhs.getSize() != this->_size)
+    if (rhs.getSize() != PRQPuzzle::size)
     {
-        printf("lhs size = %d, rhs size = %d\n", this->_size, rhs.getSize());
-        printf("rhs size = %d, lhs size = %d\n", rhs.getSize(), this->_size);
+        printf("lhs size = %d, rhs size = %d\n", PRQPuzzle::size, rhs.getSize());
+        printf("rhs size = %d, lhs size = %d\n", rhs.getSize(), PRQPuzzle::size);
         throw std::runtime_error(std::string("Tried to compare puzzles of different size"));
     }
     if (this->_hash != rhs.getHash())
         return (false);
-    for(int i = 0; i < this->_size; ++i)
-        for (int j = 0; j < this->_size; j++)
+    for(int i = 0; i < PRQPuzzle::size; ++i)
+        for (int j = 0; j < PRQPuzzle::size; j++)
             if (tmp[i][j] != this->_puzzle[i][j])
                 return (false);
     return (true);
@@ -71,7 +75,7 @@ int         **PRQPuzzle::getPuzzle(void) const
 
 int         PRQPuzzle::getSize(void) const
 {
-    return this->_size;
+    return PRQPuzzle::size;
 }
 
 size_t      PRQPuzzle::getHash(void) const
@@ -101,11 +105,11 @@ void        PRQPuzzle::increaseDepth(void)
 
 void        PRQPuzzle::printPuzzle(int tabs) const
 {
-    for(int y = 0; y < this->_size; ++y)
+    for(int y = 0; y < PRQPuzzle::size; ++y)
     {
         for (int i = 0; i < tabs; ++i)
             std::cout << "\t";
-        for (int x = 0; x < this->_size; ++x)
+        for (int x = 0; x < PRQPuzzle::size; ++x)
             std::cout << (std::to_string(this->_puzzle[y][x]) + " ");
         std::cout << std::endl;
     }
@@ -128,13 +132,13 @@ std::vector<PRQPuzzle*>    PRQPuzzle::generatePuzzleFromPosition(void)
     int poss[4][2] = {{1, 0}, {0, 1}, {-1, 0}, {0, -1}};
     int x, y;
     this->findNumberinPuzzle(0, &x, &y);
-    if (x == this->_size && y == this->_size)
+    if (x == PRQPuzzle::size && y == PRQPuzzle::size)
         throw std::runtime_error(std::string("Tried to generate puzzles from puzzle without empty space"));
 
     for(int i = 0; i < 4; ++i)
     {
-        if (y + poss[i][0] < 0 || y + poss[i][0] >= this->_size
-            || x + poss[i][1] < 0 || x + poss[i][1] >= this->_size)
+        if (y + poss[i][0] < 0 || y + poss[i][0] >= PRQPuzzle::size
+            || x + poss[i][1] < 0 || x + poss[i][1] >= PRQPuzzle::size)
             continue;
         PRQPuzzle *tmp = new PRQPuzzle(*this);
         tmp->swapValues(x, y, x + poss[i][1], y + poss[i][0]);
@@ -147,8 +151,8 @@ std::vector<PRQPuzzle*>    PRQPuzzle::generatePuzzleFromPosition(void)
 
 void    PRQPuzzle::findNumberinPuzzle(int nb, int *x, int *y)
 {
-    for (*y = 0; *y < this->_size; ++(*y))
-        for (*x = 0; *x < this->_size; ++(*x))
+    for (*y = 0; *y < PRQPuzzle::size; ++(*y))
+        for (*x = 0; *x < PRQPuzzle::size; ++(*x))
             if (this->_puzzle[*y][*x] == nb)
                 return ;
     throw std::runtime_error(("couldn't find " + std::to_string(nb)
@@ -160,8 +164,8 @@ size_t  PRQPuzzle::hashPuzzle(int **puzzle)
     std::hash<std::string> hasher;
     std::string str = "";
 
-    for (int i = 0; i < this->_size; ++i)
-        for (int j = 0; j < this->_size; ++j)
+    for (int i = 0; i < PRQPuzzle::size; ++i)
+        for (int j = 0; j < PRQPuzzle::size; ++j)
             str += std::to_string(puzzle[i][j]);
     return hasher(str);
 }

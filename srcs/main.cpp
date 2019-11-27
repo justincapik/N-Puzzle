@@ -144,13 +144,20 @@ int     main(int ac, char **av)
 
     PRQSolver solver(firstTab, ::size);
     
-    PRQPuzzle *solution = solver.solve("AED", "UCS");
-    while(solution != nullptr)
+    PRQPuzzle *solution = solver.solve("AMD", "UCS");
+    PRQPuzzle *tmp = solution;
+    while(tmp != nullptr)
     {
-        solution->printPuzzle();
+        tmp->printPuzzle();
         std::cout<< std::endl;
-        solution = solution->prevInSolution;
+        tmp = tmp->prevInSolution;
     }
+    std::cout << "complexity in time = " << solver.ComplexityInTime << std::endl;
+    std::cout << "complexity in size = " << solver.ComplexityInSize << std::endl;
+    if (solution != nullptr)
+        std::cout << "number of moves for solution = " << solution->getDepth() << std::endl;
+    else
+        std::cout << "No solution found" << std::endl;
     //std::cout << test->getHash() << std::endl;
     //PRQPuzzle test2(*test);
     //std::cout << test2.getHash() << std::endl;

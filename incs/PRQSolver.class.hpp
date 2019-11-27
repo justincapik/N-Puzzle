@@ -45,11 +45,9 @@ class PRQSolver
         void        deleteFromClosedList(PRQPuzzle *prevClose);
         void        deleteFromOpenList(PRQPuzzle *prevOpen);
 
-        double      timeTaken;
-        int         totalOperations;
-        int         totalOpenStates;
-        int         maxStatesAtATime;
-    
+        int         ComplexityInTime;
+        int         ComplexityInSize;
+        int         SolutionDepth;
 };
 
 //optimization idea =>

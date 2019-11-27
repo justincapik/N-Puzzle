@@ -8,10 +8,9 @@ class PRQPuzzle
 {
     private:
         int         **_puzzle;
-        const int   _size;
+        size_t      _hash;
         double      _heuristic;
         int         _depth;
-        size_t      _hash;
 
         size_t      hashPuzzle(int **puzzle);
 
@@ -38,8 +37,9 @@ class PRQPuzzle
 
         void        swapValues(int x1, int y1, int x2, int y2);
         std::vector<PRQPuzzle*>    generatePuzzleFromPosition(void);
-
+        
         PRQPuzzle   *prevInSolution;
+        static int   size;
 };
 
 
