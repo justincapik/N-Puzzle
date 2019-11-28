@@ -1,9 +1,7 @@
 - add IsSolvable Function
-- make heuristic and search type availabe with argv
+- make heuristic and search type availabe with argv X
 - complexity in time/size and solution depth at end X
 - link to web visu
 - show complexity in time/size during execution X
-- finish Greedy Search <-
+- finish Greedy Search X
 
-maybe:
-- add check to openlist

@@ -20,10 +20,8 @@ class PRQSolver
 
         PRQPuzzle   *genSolution(void);
 
-        PRQPuzzle   *uniformCostSearch(std::vector<PRQPuzzle*> generated,
-            std::string heuristicType, PRQPuzzle *best);
-        PRQPuzzle   *greedySearch(std::vector<PRQPuzzle*> generated,
-            std::string heuristicType, PRQPuzzle *best);
+        PRQPuzzle   *algoDecisions(std::vector<PRQPuzzle*> generated,
+            std::string heuristicType, std::string searchType, PRQPuzzle *best);
 
     public:
 
@@ -34,7 +32,8 @@ class PRQSolver
         //searchType -> "GreedySearch" or "UniformCost"
         PRQPuzzle      *solve(std::string heuristicType, std::string searchType);
         
-        double  calcHeuristic(PRQPuzzle *puzzle, std::string heuristicType); 
+        double  calcHeuristic(PRQPuzzle *puzzle, std::string heuristicType,
+            std::string searchType); 
         void    addToOpenList(PRQPuzzle *puzzle);
         void    addToClosedList(PRQPuzzle *puzzle);
         // returns -1 if the puzzle is not in the closed list,

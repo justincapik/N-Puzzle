@@ -32,16 +32,18 @@ PRQPuzzle    *PRQSolver::solve(std::string heuristicType, std::string searchType
     PRQPuzzle      *best;
 
     //printf("\e[?25l");
-
     if (this->_openList.getTop()->compare(*(this->_solutionPuzzle)))
         return this->_openList.getTop();
     while (this->_openList.getTop() != nullptr)
+    //for (int i = 0; i < 1000; ++i)
     {
-        if (this->ComplexityInTime % 100000 < 50)
+
+        if (this->ComplexityInTime % 10000 < 50)
         {
             std::cout << "\r";
             std::cout << "complexity in time = " << this->ComplexityInTime;
             std::cout << ", complexity in size = " << this->ComplexityInSize;
+            //std::cout << std::endl;
         }
         best = this->getNextAndUpdateOpenList();
         ++this->ComplexityInTime;
@@ -49,29 +51,25 @@ PRQPuzzle    *PRQSolver::solve(std::string heuristicType, std::string searchType
         std::vector<PRQPuzzle*>  generated = best->generatePuzzleFromPosition();
 
         PRQPuzzle   *result = nullptr;
-        if (searchType.compare("UCS") == 0)
-            result = this->uniformCostSearch(generated, heuristicType, best);
-        else if (searchType.compare("GS") == 0)
-            result = this->greedySearch(generated, heuristicType, best);
-        else
-            throw std::runtime_error("Invalide search type name (UCS or GS)");
+        result = this->algoDecisions(generated, heuristicType, searchType, best);
         if (result != nullptr)
         {
             std::cout << "\r                                                                   \r";
-            printf("\e[?25h");
+            //printf("\e[?25h");
             return result;
         }
         this->addToClosedList(best);
     }
-    //TODO: operations info (max states at a time, total open states...)
     std::cout << "\r                                                                   \r";
     std::cout << "No possible solution" << std::endl;
     //printf("\e[?25h");
+    (void)heuristicType;
+    (void)searchType;
     return nullptr;
 }
 
-PRQPuzzle   *PRQSolver::uniformCostSearch(std::vector<PRQPuzzle*> generated,
-    std::string heuristicType, PRQPuzzle *best)
+PRQPuzzle   *PRQSolver::algoDecisions(std::vector<PRQPuzzle*> generated,
+    std::string heuristicType, std::string searchType,PRQPuzzle *best)
 {
     for (std::vector<PRQPuzzle*>::iterator it = generated.begin();
         it < generated.end(); ++it)
@@ -89,11 +87,19 @@ PRQPuzzle   *PRQSolver::uniformCostSearch(std::vector<PRQPuzzle*> generated,
         if ((*it)->compare(*(this->_solutionPuzzle)))
         {
             (*it)->prevInSolution = best;
-            return (*it);
+            PRQPuzzle   *ret = *it;
+            ++it;
+            while (it < generated.end())
+            {
+                delete (*it);
+                (*it) = nullptr;
+                ++it;
+            }
+            return (ret);
         }
 
         PRQPuzzle   *closed;
-        (*it)->setHeuritic(this->calcHeuristic((*it), heuristicType));
+        (*it)->setHeuritic(this->calcHeuristic((*it), heuristicType, searchType));
         if (checkIfInClosedList(*it, &closed))
         {
             if (closed->getHeuristic() <= (*it)->getHeuristic())
@@ -118,99 +124,60 @@ PRQPuzzle   *PRQSolver::uniformCostSearch(std::vector<PRQPuzzle*> generated,
     return nullptr;
 }
 
-PRQPuzzle   *PRQSolver::greedySearch(std::vector<PRQPuzzle*> generated,
-    std::string heuristicType, PRQPuzzle *best)
-{
-    /*
-    PRQPuzzle   *bestpuzzle = nullptr;
-    int          bestval = INT_MIN;
 
-    for (std::vector<PRQPuzzle*>::iterator it = generated.begin();
-        it < generated.end(); ++it)
-    {
-        if ((*it)->compare(*(this->_solutionPuzzle)))
-        {
-            (*it)->prevInSolution = best;
-            return (*it);
-        }
-        
-        (*it)->setHeuritic(this->calcHeuristic((*it), heuristicType));
-        PRQPuzzle *closed;
-        if (this->checkIfInClosedList(*it, &closed))
-        {
-            if (closed->getHeuristic() <= (*it)->getHeuristic())
-            {
-                delete (*it);
-                (*it) = nullptr;
-            }
-            else
-            {
-                if (closed->getHeuristic() < bestval)
-                {
-                    
-                }
-            }
-
-        }
-        
-    }
-    this->addToOpenList(bestpuzzle);
-    bestpuzzle->prevInSolution = best;
-    return nullptr;
-    */
-    (void)generated;
-    (void)heuristicType;
-    (void)best;
-    throw std::runtime_error("greedy search function not done yet"); //TODO:
-    return nullptr;
-}
-
-double     PRQSolver::calcHeuristic(PRQPuzzle *puzzle, std::string heauristicType)
+double     PRQSolver::calcHeuristic(PRQPuzzle *puzzle, std::string heauristicType,
+    std::string searchType)
 {
     int **tmp = puzzle->getPuzzle();
     int **sol = this->_solutionPuzzle->getPuzzle();
 
+    double score = 0;
     if (heauristicType.compare("BFS") == 0) //Breadth First Search
-        return 0 + puzzle->getDepth();
-    else if (heauristicType.compare("AHD") == 0) //A* Tiles-out
+        ;
+    else if (heauristicType.compare("AHD") == 0) //A* Hamming distance
     {
-        int score = 0;
         for (int y = 0; y < this->_size; ++y)
             for (int x = 0; x < this->_size; ++x)
                 if (tmp[y][x] != sol[y][x])
                     ++score;
-        return puzzle->getDepth() + score;
     }
     else if (heauristicType.compare("AMD") == 0) //A* Manhattan Distance
     {
-        int score = 0;
         for (int y = 0; y < this->_size; ++y)
         {
             for (int x = 0; x < this->_size; ++x)
             {
-                int tmpy, tmpx;
-                this->_solutionPuzzle->findNumberinPuzzle(tmp[y][x], &tmpx, &tmpy);
-                score += abs(tmpy - y) + abs(tmpx - x);
+                if (tmp[y][x] != 0)
+                {
+                    int tmpy, tmpx;
+                    this->_solutionPuzzle->findNumberinPuzzle(tmp[y][x], &tmpx, &tmpy);
+                    score += abs(tmpy - y) + abs(tmpx - x);
+                }
             }
         }
-        return puzzle->getDepth() + score;
     }
     else if (heauristicType.compare("AED") == 0) // A* Euclidian distance
     {
-        double score = 0;
         for (int y = 0; y < this->_size; ++y)
         {
             for (int x = 0; x < this->_size; ++x)
             {
-                int tmpy, tmpx;
-                this->_solutionPuzzle->findNumberinPuzzle(tmp[y][x], &tmpx, &tmpy);
-                score += std::sqrt((tmpy - y) * (tmpy - y) + (tmpx - x) * (tmpx - x));
+                if (tmp[y][x] != 0)
+                {
+                    int tmpy, tmpx;
+                    this->_solutionPuzzle->findNumberinPuzzle(tmp[y][x], &tmpx, &tmpy);
+                    score += std::sqrt((tmpy - y) * (tmpy - y) + (tmpx - x) * (tmpx - x));
+                }
             }
         }
-        return puzzle->getDepth() + score;
     }
     else
         throw std::runtime_error(std::string("Invalide heuristic name"));
+    if (searchType.compare("UCS") == 0)
+        score += puzzle->getDepth();
+    else if (searchType.compare("GS") != 0)
+        throw std::runtime_error("Invalide search type name");
+    return score;
 }
 
 PRQPuzzle  *PRQSolver::genSolution(void)
@@ -246,17 +213,10 @@ PRQPuzzle  *PRQSolver::genSolution(void)
 /* À modifier à partir d'ici */
 bool    PRQSolver::checkIfInClosedList(PRQPuzzle *generated, PRQPuzzle **closed)
 {
-    //std::cout << "check closed list" << std::endl;
     if ((*closed = this->_closedList.isInTree(generated)) == nullptr)
-    {
-        //std::cout << "check closed list end" << std::endl;
         return false;
-    }
     else
-    {
-        //std::cout << "check closed list end" << std::endl;
         return true;
-    }
 }
 
 //DO NOT USED (inefficient)
@@ -274,10 +234,8 @@ void    PRQSolver::addToOpenList(PRQPuzzle *puzzle)
 
 void    PRQSolver::addToClosedList(PRQPuzzle *puzzle)
 {
-    //std::cout << "add to closed" << std::endl;
     this->_closedList.add(puzzle);
     ++this->ComplexityInSize;
-    //std::cout << "add to closed end" << std::endl;
 }
 
 PRQPuzzle   *PRQSolver::getNextAndUpdateOpenList(void)
@@ -288,10 +246,8 @@ PRQPuzzle   *PRQSolver::getNextAndUpdateOpenList(void)
 
 void        PRQSolver::deleteFromClosedList(PRQPuzzle *prevClosed)
 {
-    //std::cout << "remove from closed" << std::endl;
     this->_closedList.remove(prevClosed);
     --this->ComplexityInSize;
-    //std::cout << "remove from closed end" << std::endl;
 }
 
 void        PRQSolver::deleteFromOpenList(PRQPuzzle *prevOpen)

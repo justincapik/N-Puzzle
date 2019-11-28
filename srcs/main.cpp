@@ -12,6 +12,8 @@ using namespace std;
 
 int size = 0;
 
+
+
 bool    clearTab(int **toClear) {
     if (toClear) {
         for (int i = 0; i < ::size; ++i)
@@ -65,7 +67,7 @@ int **parsing(string fileName) {
                 ret[y][x++] = n;
             }
         }
-        if ((x != ::size || ::size > 5 || ::size < 3) && clearTab(ret))
+        if ((x != ::size /*|| ::size > 5*/ || ::size < 3) && clearTab(ret))
             throw runtime_error("Invalid file format");
         x = 0;
         y++;
@@ -76,8 +78,8 @@ int **parsing(string fileName) {
 
 int     main(int ac, char **av)
 {
-    string algo = "AStarSearch";
-    string heuristic = "ManhattanDistance";
+    string searchType = "UCS";
+    string heuristic = "AMD";
     string VisualMode = "";
 
     int **firstTab = NULL;
@@ -87,22 +89,24 @@ int     main(int ac, char **av)
             throw runtime_error("usage");
         for (int n = 1; n < ac; n++) {
             if (av[n][0] == '-') {
-                switch (av[n][1]) {
-                    case 'g':
-                        algo = "GreedySearch";
-                        break;
-                    case 'u':
-                        algo = "UniformCost";
-                        break;
-                    case 'v':
-                        VisualMode = "text";
-                        break;
-                    case 'w':
-                        VisualMode = "web";
-                        break;
-                    default:
-                        throw runtime_error("invalid option: " + static_cast<string>(av[n]));
-                }
+                if (strcmp(av[n] + 1, "GS") == 0)
+                    searchType = "GS";
+                else if (strcmp(av[n] + 1, "UCS") == 0)
+                    searchType = "UCS";
+                else if (strcmp(av[n] + 1, "BFS") == 0)
+                    heuristic = "BFS";
+                else if (strcmp(av[n] + 1, "AHD") == 0)
+                    heuristic = "AHD";
+                else if (strcmp(av[n] + 1, "AMD") == 0)
+                    heuristic = "AMD";
+                else if (strcmp(av[n] + 1, "AED") == 0)
+                    heuristic = "AED";
+                else if (strcmp(av[n] + 1, "v") == 0)
+                    VisualMode = "text";
+                else if (strcmp(av[n] + 1, "w") == 0)
+                    VisualMode = "web";
+                else
+                    throw runtime_error("invalid option: " + static_cast<string>(av[n]));
             }
             else if (!firstTab)
                 firstTab = parsing(av[n]);
@@ -113,38 +117,29 @@ int     main(int ac, char **av)
             clearTab(firstTab);
         if (static_cast<string>(e.what()).compare("usage"))
             cout << e.what() << endl << endl;
-        cout << "Usage: N-Puzzle [-g] [-u] FileName" << endl
-        << "   -g   Use greedy search (default : A*)" << endl
-        << "   -u   Use uniform-cost search" << endl
-        << "   -v   Use visualisator mode" << endl;
+        cout << "Usage: N-Puzzle FileName [-BFS -AHD -AMD -AED] [-UCS -GS] [-v] " << endl
+        << "Heuristics:" << endl
+        << "   -BFS     Breath First Search" << endl
+        << "   -AHD     A* Hamming Distance" << endl
+        << "   -AMD     A* Manhatan Distance" << endl
+        << "   -AED     A* Euclidian Distance" << endl
+        << "Search type:" << endl
+        << "   -UCS     Uniform Cost Search" << endl
+        << "   -GS      Greedy Search" << endl
+        << "Additional:" << endl
+        << "   -v       Use text visualisator mode" << endl
+        << "   -w       Use web visualisator mode" << endl;
         return 0;
     }
-    /*
-    Puzzle *ogPuzzle = new Puzzle(firstTab, ::size);
-    std::cout << std::endl;
-
-    OldSolver solver(ogPuzzle, ::size);
-    Puzzle *solution = solver.solve("A* Manhattan distance", "None");
-    solution->printPuzzle();
-    std::cout << (std::to_string(solution->getDepth())) << std::endl;
-    */
 
    /*
     list<int**> soluce;
     Visual visu(::size, VisualMode);
-
-    firstTab[2][0] = 8;
-    firstTab[2][1] = 1;
-    firstTab[2][2] = 4;
-
-    NodeSolver solver(firstTab, ::size);
-    Node *solution = solver.solve("AED", "");
-    std::cout << sizeof(Node) << std::endl;
     */
 
     PRQSolver solver(firstTab, ::size);
-    
-    PRQPuzzle *solution = solver.solve("AMD", "UCS");
+
+    PRQPuzzle *solution = solver.solve(heuristic, searchType);
     PRQPuzzle *tmp = solution;
     while(tmp != nullptr)
     {
@@ -152,17 +147,18 @@ int     main(int ac, char **av)
         std::cout<< std::endl;
         tmp = tmp->prevInSolution;
     }
+    std::cout << "heuristic = " << heuristic << std::endl;
+    std::cout << "searchType = " << searchType << std::endl;
     std::cout << "complexity in time = " << solver.ComplexityInTime << std::endl;
     std::cout << "complexity in size = " << solver.ComplexityInSize << std::endl;
     if (solution != nullptr)
+    {
         std::cout << "number of moves for solution = " << solution->getDepth() << std::endl;
+        delete solution;
+    }
     else
         std::cout << "No solution found" << std::endl;
-    //std::cout << test->getHash() << std::endl;
-    //PRQPuzzle test2(*test);
-    //std::cout << test2.getHash() << std::endl;
-
-
+    
     /*
     int **tab = new int*[::size];
     for (int i = 0; i < ::size; ++i)
