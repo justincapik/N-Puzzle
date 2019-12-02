@@ -134,7 +134,6 @@ int     main(int ac, char **av)
 
     try {
         list<int**> soluce;
-        Visual visu(::size, VisualMode);
 
         PRQSolver solver(firstTab, ::size);
         PRQPuzzle *solution = solver.solve(heuristic, searchType);
@@ -152,6 +151,7 @@ int     main(int ac, char **av)
         std::cout << "complexity in size = " << solver.ComplexityInSize << std::endl;
 
         if (VisualMode != "") {
+            Visual visu(::size, VisualMode);
             if (VisualMode == "web")
                 visu.GenerateWeb(soluce);
             else if (VisualMode == "text")

@@ -65,7 +65,7 @@
 
 
 			createRows(data[i], table, data[size - 1]);
-			await sleep(50 + (300 * (10 / size)));
+			await sleep(50 + (300 * (15 / size)));
 		}
 		elem.classList.remove('is-loading');
 
