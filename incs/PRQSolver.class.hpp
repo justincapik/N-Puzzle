@@ -18,6 +18,7 @@ class PRQSolver
         BinaryTree<PRQPuzzle*>      _closedList;
 
         PRQPuzzle   *genSolution(void);
+        bool        isSolvable(int size, int**);
 
         PRQPuzzle   *algoDecisions(std::vector<PRQPuzzle*> generated,
             std::string heuristicType, std::string searchType, PRQPuzzle *best);
@@ -30,9 +31,9 @@ class PRQSolver
         //heuristicType -> "ManhattanDistance", "EuclidianDistance" ...
         //searchType -> "GreedySearch" or "UniformCost"
         PRQPuzzle      *solve(std::string heuristicType, std::string searchType);
-        
+
         double  calcHeuristic(PRQPuzzle *puzzle, std::string heuristicType,
-            std::string searchType); 
+            std::string searchType);
         void    addToOpenList(PRQPuzzle *puzzle);
         void    addToClosedList(PRQPuzzle *puzzle);
         // returns -1 if the puzzle is not in the closed list,
