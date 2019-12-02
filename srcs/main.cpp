@@ -132,77 +132,36 @@ int     main(int ac, char **av)
         return 0;
     }
 
-   /*
-    list<int**> soluce;
-    Visual visu(::size, VisualMode);
-    */
+    try {
+        list<int**> soluce;
+        Visual visu(::size, VisualMode);
 
-    PRQSolver solver(firstTab, ::size);
-
-    PRQPuzzle *solution = solver.solve(heuristic, searchType);
-    PRQPuzzle *tmp = solution;
-    while(tmp != nullptr)
-    {
-        tmp->printPuzzle();
-        std::cout<< std::endl;
-        tmp = tmp->prevInSolution;
-    }
-    std::cout << "heuristic = " << heuristic << std::endl;
-    std::cout << "searchType = " << searchType << std::endl;
-    std::cout << "complexity in time = " << solver.ComplexityInTime << std::endl;
-    std::cout << "complexity in size = " << solver.ComplexityInSize << std::endl;
-    if (solution != nullptr)
-    {
-        std::cout << "number of moves for solution = " << solution->getDepth() << std::endl;
-        delete solution;
-    }
-    else
-        std::cout << "No solution found" << std::endl;
-    
-    /*
-    int **tab = new int*[::size];
-    for (int i = 0; i < ::size; ++i)
-        tab[i] = new int[::size];
-    int k = 0;
-
-    while (solution != NULL)
-    {
-        //std::cout << "addr = " << static_cast<void*>(solution) << std::endl;
-        int **tab = new int*[::size];
-        for (int i = 0; i < ::size; ++i)
-            tab[i] = new int[::size];
-        solver.convertNodeToTable(solution, tab);
-        for (int i = 0; i < ::size; ++i)
+        PRQSolver solver(firstTab, ::size);
+        PRQPuzzle *solution = solver.solve(heuristic, searchType);
+        PRQPuzzle *tmp = solution;
+        while(tmp != nullptr)
         {
-            for (int j = 0; j < ::size; ++j)
-                std::cout << tab[i][j] << " ";
-            std::cout << std::endl;
+            tmp->printPuzzle();
+            soluce.push_front(tmp->getPuzzle());
+            std::cout<< std::endl;
+            tmp = tmp->prevInSolution;
         }
-        if (VisualMode != "")
-            soluce.push_front(tab);
-        std::cout << std::endl;
-        solution = solution->lastInSequence;
-        ++k;
+        std::cout << "heuristic = " << heuristic << std::endl;
+        std::cout << "searchType = " << searchType << std::endl;
+        std::cout << "complexity in time = " << solver.ComplexityInTime << std::endl;
+        std::cout << "complexity in size = " << solver.ComplexityInSize << std::endl;
+
+        if (VisualMode != "") {
+            if (VisualMode == "web")
+                visu.GenerateWeb(soluce);
+            else if (VisualMode == "text")
+                visu.print(soluce);
+        }
     }
-    if (VisualMode != "") {
-        if (VisualMode == "web")
-            visu.GenerateWeb(soluce);
-        else if (VisualMode == "text")
-            visu.print(soluce);
-
-    	for (list<int**>::iterator it = soluce.begin(); it != soluce.end(); it++) {
-    		for (int n = 0; n < ::size; n++)
-                delete (*it)[n];
-            delete (*it);
-    	}
+    catch (exception& e) {
+        cout << e.what() << endl;
     }
-    //std::cout << "addr = " << static_cast<void*>(solution) << std::endl;
 
 
-
-
-    (void)ac;
-    (void)av;
-    */
     return (0);
 }

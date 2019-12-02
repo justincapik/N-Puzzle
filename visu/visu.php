@@ -60,13 +60,12 @@
 		box.innerHTML = "";
 		box.appendChild(table);
 		box.classList.remove('is-invisible');
-        console.log(300 + (200 * (10 / size)));
         for (var i = 0; i < size; i++) {
 			console.log(i);
 
 
 			createRows(data[i], table, data[size - 1]);
-			await sleep(300 + (100 * (10 / size)));
+			await sleep(50 + (300 * (10 / size)));
 		}
 		elem.classList.remove('is-loading');
 

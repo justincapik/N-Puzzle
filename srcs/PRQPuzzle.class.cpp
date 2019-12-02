@@ -39,7 +39,6 @@ PRQPuzzle::PRQPuzzle(PRQPuzzle const & instance):  _hash(instance.getHash()),
 
 PRQPuzzle::~PRQPuzzle(void)
 {
-    //std::cout << "puzzle delete with hash = " << this->_hash << " and adress = " << this << std::endl;
     for (int i = 0; i < PRQPuzzle::size; ++i)
     {
         delete[] this->_puzzle[i];

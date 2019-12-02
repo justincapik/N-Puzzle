@@ -69,10 +69,20 @@ void Visual::print(list<int**> solution) {
 void Visual::GenerateWeb(list<int**> solution) {
 	ofstream file("visu/data");
 	for (list<int**>::iterator it = solution.begin(); it != solution.end(); it++) {
-		for (int n = 0; n < _size; n++)
-			for (int i = 0; i < _size; i++)
+
+		cout << *it << endl;
+		if (!(*it)[0])
+			cout << "nope" <<endl;
+		for (int n = 0; n < _size; n++) {
+			for (int i = 0; i < _size; i++) {
 				file << (*it)[n][i] << " ";
+				cout << (*it)[n][i] << " ";
+			}
+
+		}
 		file << endl;
+		cout << endl;
 	}
+	cout << "end ?" << endl;
 	file.close();
 }

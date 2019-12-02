@@ -1,6 +1,8 @@
 #include <iostream>
 #include <stdexcept>
 #include <valarray>
+#include <iomanip>
+
 #include "PRQSolver.class.hpp"
 #include "PRQ.class.hpp"
 #include "PRQPuzzle.class.hpp"
@@ -13,6 +15,8 @@ PRQSolver::PRQSolver(int **original, int size):
 {
     this->_openList.add(new PRQPuzzle(original, size));
     this->_solutionPuzzle = this->genSolution();
+    if (!this->isSolvable(size, original))
+        throw std::runtime_error("This puzzle is not solvable.");
 
     this->ComplexityInSize = 0;
     this->ComplexityInTime = 0;
@@ -254,4 +258,36 @@ void        PRQSolver::deleteFromOpenList(PRQPuzzle *prevOpen)
 {
     (void)prevOpen;
     throw std::runtime_error("Error: called deletFromOpenList()");
+}
+
+bool        PRQSolver::isSolvable(int size, int **original) {
+    int p0s = 0;
+    int convert[size * size];
+    int **solution = this->_solution;
+
+    for (int y = 0; y < size; y++) {
+        for (int x = 0; x < size; x++) {
+            if (solution[y][x] != 0)
+                convert[solution[y][x] - 1] = original[y][x];
+            else
+                convert[size * size - 1] = original[y][x];
+            if (original[y][x] == 0)
+                p0s = size - y;
+        }
+    }
+
+    int inver = 0;
+    for (int i = 0; i < size * size; i++) {
+        for (int j = i + 1; j < size * size; j++) {
+            if (convert[i] > convert[j])
+                inver++;
+            if (convert[i] == convert[j])
+                throw std::runtime_error("Invalid file format.");
+        }
+
+    }
+
+    if (size % 2 == 0 && p0s % 2 != 0)
+        return (inver % 2 != 0);
+    return (inver % 2 == 0);
 }
