@@ -149,7 +149,7 @@ int     main(int ac, char **av)
         std::cout << "searchType = " << searchType << std::endl;
         std::cout << "complexity in time = " << solver.ComplexityInTime << std::endl;
         std::cout << "complexity in size = " << solver.ComplexityInSize << std::endl;
-
+        std::cout << "number of moves for solution = " << solution->getDepth() << std::endl;
         if (VisualMode != "") {
             Visual visu(::size, VisualMode);
             if (VisualMode == "web")
