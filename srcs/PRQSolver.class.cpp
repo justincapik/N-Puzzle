@@ -27,7 +27,6 @@ PRQSolver::PRQSolver(int **original, int size):
 
 PRQSolver::~PRQSolver()
 {
-    std::cout << "destructor called" << std::endl;
     delete this->_solutionPuzzle;
 }
 
