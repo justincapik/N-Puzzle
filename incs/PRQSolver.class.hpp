@@ -11,7 +11,6 @@
 class PRQSolver
 {
     private:
-        int         **_solution;
         PRQPuzzle   *_solutionPuzzle;
         int         _size;
 
@@ -49,10 +48,5 @@ class PRQSolver
         int         ComplexityInSize;
         int         SolutionDepth;
 };
-
-//optimization idea =>
-// make a table pointing to each depth or heuristic, for example:
-// open list heuristic values -> {1, 1, 2, 3, 3, 3, 3, 3, 4, 4, 5, 5, 5, 5, ...}
-// pointer table ->              {^,    ^, ^,             ^,    ^,          ...}
 
 #endif
