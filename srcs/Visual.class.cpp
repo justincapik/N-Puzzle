@@ -10,7 +10,7 @@ using namespace std;
 #include "Visual.class.hpp"
 
 Visual::Visual(int size, string type) : _size(size), _type(type) {
-	if (_type != "web") {
+	if (_type == "text") {
 		initscr();
 		noecho();
 		start_color();
@@ -23,7 +23,7 @@ Visual::Visual(int size, string type) : _size(size), _type(type) {
 }
 
 Visual::~Visual() {
-	if (_type != "web")
+	if (_type == "text")
 		endwin();
 }
 

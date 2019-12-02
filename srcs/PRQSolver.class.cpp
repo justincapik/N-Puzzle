@@ -287,7 +287,7 @@ bool        PRQSolver::isSolvable(int size, int **original) {
 
     }
 
-    if (size % 2 == 0 && p0s % 2 != 0)
-        return (inver % 2 != 0);
+    if (size % 2 == 0)
+        return (p0s % 2 != 0 && inver % 2 != 0);
     return (inver % 2 == 0);
 }
