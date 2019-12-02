@@ -13,11 +13,13 @@
 PRQSolver::PRQSolver(int **original, int size):
     _size(size)
 {
-    this->_openList.add(new PRQPuzzle(original, size));
     this->_solutionPuzzle = this->genSolution();
+    this->_openList.add(new PRQPuzzle(original, size));
     if (!this->isSolvable(size, original))
+    {
+        delete this->_solutionPuzzle;
         throw std::runtime_error("This puzzle is not solvable.");
-
+    }
     this->ComplexityInSize = 0;
     this->ComplexityInTime = 0;
     this->SolutionDepth = -1;
@@ -25,6 +27,7 @@ PRQSolver::PRQSolver(int **original, int size):
 
 PRQSolver::~PRQSolver()
 {
+    std::cout << "destructor called" << std::endl;
     delete this->_solutionPuzzle;
 }
 
@@ -54,6 +57,7 @@ PRQPuzzle    *PRQSolver::solve(std::string heuristicType, std::string searchType
         {
             std::cout << "\r                                                                   \r";
             this->addToClosedList(best);
+            this->addToClosedList(result);
             return result;
         }
         this->addToClosedList(best);
