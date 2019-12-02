@@ -22,20 +22,15 @@ PRQSolver::PRQSolver(int **original, int size):
 PRQSolver::~PRQSolver()
 {
     delete this->_solutionPuzzle;
-
-    //no need to call open list destructor
-    //TODO:
 }
 
 PRQPuzzle    *PRQSolver::solve(std::string heuristicType, std::string searchType)
 {
     PRQPuzzle      *best;
 
-    //printf("\e[?25l");
     if (this->_openList.getTop()->compare(*(this->_solutionPuzzle)))
         return this->_openList.getTop();
     while (this->_openList.getTop() != nullptr)
-    //for (int i = 0; i < 1000; ++i)
     {
 
         if (this->ComplexityInTime % 10000 < 50)
@@ -43,7 +38,6 @@ PRQPuzzle    *PRQSolver::solve(std::string heuristicType, std::string searchType
             std::cout << "\r";
             std::cout << "complexity in time = " << this->ComplexityInTime;
             std::cout << ", complexity in size = " << this->ComplexityInSize;
-            //std::cout << std::endl;
         }
         best = this->getNextAndUpdateOpenList();
         ++this->ComplexityInTime;
@@ -55,16 +49,13 @@ PRQPuzzle    *PRQSolver::solve(std::string heuristicType, std::string searchType
         if (result != nullptr)
         {
             std::cout << "\r                                                                   \r";
-            //printf("\e[?25h");
+            this->addToClosedList(best);
             return result;
         }
         this->addToClosedList(best);
     }
     std::cout << "\r                                                                   \r";
     std::cout << "No possible solution" << std::endl;
-    //printf("\e[?25h");
-    (void)heuristicType;
-    (void)searchType;
     return nullptr;
 }
 
@@ -205,7 +196,6 @@ PRQPuzzle  *PRQSolver::genSolution(void)
         dirX = (dir == 0) ? 1 : ((dir == 2) ? -1 : 0);
         dirY = (dir == 1) ? 1 : ((dir == 3) ? -1 : 0);
     }
-    this->_solution = solutionTab;
     PRQPuzzle *solution = new PRQPuzzle(solutionTab, this->_size);
     return solution;
 }

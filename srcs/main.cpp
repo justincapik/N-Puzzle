@@ -140,6 +140,7 @@ int     main(int ac, char **av)
     PRQSolver solver(firstTab, ::size);
 
     PRQPuzzle *solution = solver.solve(heuristic, searchType);
+    /*
     PRQPuzzle *tmp = solution;
     while(tmp != nullptr)
     {
@@ -151,6 +152,7 @@ int     main(int ac, char **av)
     std::cout << "searchType = " << searchType << std::endl;
     std::cout << "complexity in time = " << solver.ComplexityInTime << std::endl;
     std::cout << "complexity in size = " << solver.ComplexityInSize << std::endl;
+    */
     if (solution != nullptr)
     {
         std::cout << "number of moves for solution = " << solution->getDepth() << std::endl;
@@ -158,7 +160,7 @@ int     main(int ac, char **av)
     }
     else
         std::cout << "No solution found" << std::endl;
-    
+
     /*
     int **tab = new int*[::size];
     for (int i = 0; i < ::size; ++i)
