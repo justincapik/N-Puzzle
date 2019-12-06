@@ -60,14 +60,14 @@ int **parsing(string fileName) {
                     ret[i] = new int[n];
             }
             else if (ss.good() || ss.eof()) {
-                if (x >= ::size)
-                    break;
+                if (x == ::size)
+                    throw runtime_error("Invalid file format");
                 if (n + 1 > static_cast<unsigned int>(::size * ::size) && clearTab(ret))
                     throw runtime_error("Invalid file format");
                 ret[y][x++] = n;
             }
         }
-        if ((x != ::size /*|| ::size > 5*/ || ::size < 3) && clearTab(ret))
+        if ((x != ::size || ::size < 3) && clearTab(ret))
             throw runtime_error("Invalid file format");
         x = 0;
         y++;
@@ -111,6 +111,8 @@ int     main(int ac, char **av)
             else if (!firstTab)
                 firstTab = parsing(av[n]);
         }
+        if (!firstTab)
+            throw runtime_error("Missing file name.");
     }
     catch (exception& e) {
         if (firstTab)

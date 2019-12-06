@@ -72,16 +72,6 @@ PRQPuzzle   *PRQSolver::algoDecisions(std::vector<PRQPuzzle*> generated,
     for (std::vector<PRQPuzzle*>::iterator it = generated.begin();
         it < generated.end(); ++it)
     {
-        /*
-        if (best->prevInSolution != nullptr
-            && best->prevInSolution->compare(**it))
-        {
-            delete (*it);
-            *it = nullptr;
-            continue;
-        } //optimization
-        */
-
         if ((*it)->compare(*(this->_solutionPuzzle)))
         {
             (*it)->prevInSolution = best;
@@ -281,6 +271,6 @@ bool        PRQSolver::isSolvable(int size, int **original) {
     }
 
     if (size % 2 == 0)
-        return (!(p0s % 2 == 0 && inver % 2 == 0));
+        return (p0s % 2 != 0 && inver % 2 != 0);
     return (inver % 2 == 0);
 }
