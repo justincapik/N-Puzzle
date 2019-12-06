@@ -1,5 +1,6 @@
 #include <iostream>
 #include <stdexcept>
+#include <iomanip>
 
 #include "PRQPuzzle.class.hpp"
 
@@ -109,7 +110,7 @@ void        PRQPuzzle::printPuzzle(int tabs) const
         for (int i = 0; i < tabs; ++i)
             std::cout << "\t";
         for (int x = 0; x < PRQPuzzle::size; ++x)
-            std::cout << (std::to_string(this->_puzzle[y][x]) + " ");
+            std::cout << std::setw((PRQPuzzle::size > 3) ? 3 : 2) << (std::to_string(this->_puzzle[y][x]));
         std::cout << std::endl;
     }
 }
